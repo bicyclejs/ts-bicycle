@@ -1,0 +1,354 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parse 1`] = `
+Object {
+  "classes": Object {
+    "Person": Object {
+      "auth": Object {
+        "enemies": "isSelf",
+        "friends": "isSelf",
+        "id": "public",
+        "name": "public",
+      },
+      "data": Object {
+        "kind": "Object",
+        "loc": Object {
+          "fileName": "/src/example/objects/Person.ts",
+          "line": 16,
+        },
+        "properties": Object {
+          "id": Object {
+            "kind": "Number",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 11,
+            },
+          },
+          "links": Object {
+            "element": Object {
+              "kind": "Object",
+              "properties": Object {
+                "linkType": Object {
+                  "elements": Array [
+                    Object {
+                      "kind": "Literal",
+                      "value": "friend",
+                    },
+                    Object {
+                      "kind": "Literal",
+                      "value": "enemy",
+                    },
+                  ],
+                  "kind": "Union",
+                  "loc": Object {
+                    "fileName": "/src/example/objects/Person.ts",
+                    "line": 7,
+                  },
+                },
+                "person": Object {
+                  "kind": "Named",
+                  "loc": Object {
+                    "fileName": "/src/example/objects/Person.ts",
+                    "line": 6,
+                  },
+                  "name": "Person",
+                },
+              },
+            },
+            "kind": "List",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 13,
+            },
+          },
+          "name": Object {
+            "elements": Array [
+              Object {
+                "kind": "Null",
+              },
+              Object {
+                "kind": "String",
+              },
+            ],
+            "kind": "Union",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 12,
+            },
+          },
+        },
+      },
+      "exportedName": "default",
+      "idName": "id",
+      "loc": Object {
+        "fileName": "/src/example/objects/Person.ts",
+        "line": 15,
+      },
+      "methods": Object {
+        "$isSelf": Object {
+          "args": Object {
+            "elements": Array [
+              Object {
+                "kind": "Void",
+              },
+              Object {
+                "kind": "Object",
+                "properties": Object {},
+              },
+            ],
+            "kind": "Union",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 21,
+            },
+          },
+          "length": 2,
+          "result": Object {
+            "kind": "Boolean",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 21,
+            },
+          },
+        },
+        "enemies": Object {
+          "args": Object {
+            "kind": "Void",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 30,
+            },
+          },
+          "length": 2,
+          "result": Object {
+            "kind": "Promise",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 30,
+            },
+            "result": Object {
+              "element": Object {
+                "kind": "Named",
+                "name": "Person",
+              },
+              "kind": "List",
+            },
+          },
+        },
+        "friends": Object {
+          "args": Object {
+            "kind": "Void",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 25,
+            },
+          },
+          "length": 2,
+          "result": Object {
+            "kind": "Promise",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 25,
+            },
+            "result": Object {
+              "element": Object {
+                "kind": "Named",
+                "name": "Person",
+              },
+              "kind": "List",
+            },
+          },
+        },
+      },
+      "staticAuth": Object {
+        "set": "public",
+      },
+      "staticMethods": Object {
+        "set": Object {
+          "args": Object {
+            "kind": "Object",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 40,
+            },
+            "properties": Object {
+              "field": Object {
+                "kind": "String",
+                "loc": Object {
+                  "fileName": "/src/example/objects/Person.ts",
+                  "line": 40,
+                },
+              },
+              "value": Object {
+                "kind": "String",
+                "loc": Object {
+                  "fileName": "/src/example/objects/Person.ts",
+                  "line": 40,
+                },
+              },
+            },
+          },
+          "length": 2,
+          "result": Object {
+            "kind": "Void",
+          },
+        },
+      },
+    },
+    "Root": Object {
+      "auth": Object {
+        "people": "public",
+        "peopleByEmail": "public",
+        "person": "public",
+      },
+      "data": Object {
+        "kind": "Object",
+        "loc": Object {
+          "fileName": "/src/example/objects/Root.ts",
+          "line": 8,
+        },
+        "properties": Object {},
+      },
+      "exportedName": "Root",
+      "idName": "id",
+      "loc": Object {
+        "fileName": "/src/example/objects/Root.ts",
+        "line": 7,
+      },
+      "methods": Object {
+        "people": Object {
+          "args": Object {
+            "kind": "Void",
+            "loc": Object {
+              "fileName": "/src/example/objects/Root.ts",
+              "line": 12,
+            },
+          },
+          "length": 2,
+          "result": Object {
+            "kind": "Promise",
+            "loc": Object {
+              "fileName": "/src/example/objects/Root.ts",
+              "line": 12,
+            },
+            "result": Object {
+              "element": Object {
+                "kind": "Named",
+                "name": "Person",
+              },
+              "kind": "List",
+            },
+          },
+        },
+        "peopleByEmail": Object {
+          "args": Object {
+            "kind": "Named",
+            "loc": Object {
+              "fileName": "/src/example/objects/Root.ts",
+              "line": 18,
+            },
+            "name": "Email",
+          },
+          "length": 2,
+          "result": Object {
+            "kind": "Promise",
+            "loc": Object {
+              "fileName": "/src/example/objects/Root.ts",
+              "line": 18,
+            },
+            "result": Object {
+              "element": Object {
+                "kind": "Named",
+                "name": "Person",
+              },
+              "kind": "List",
+            },
+          },
+        },
+        "person": Object {
+          "args": Object {
+            "kind": "Number",
+            "loc": Object {
+              "fileName": "/src/example/objects/Root.ts",
+              "line": 15,
+            },
+          },
+          "length": 2,
+          "result": Object {
+            "kind": "Promise",
+            "loc": Object {
+              "fileName": "/src/example/objects/Root.ts",
+              "line": 15,
+            },
+            "result": Object {
+              "kind": "Named",
+              "name": "Person",
+            },
+          },
+        },
+      },
+      "staticAuth": Object {},
+      "staticMethods": Object {},
+    },
+  },
+  "context": Array [
+    Object {
+      "exportName": "default",
+      "fileName": "/src/example/Context",
+    },
+  ],
+  "scalars": Object {
+    "Email": Object {
+      "aliasLocation": Object {
+        "fileName": "/src/example/scalars/Email.ts",
+        "line": 6,
+      },
+      "brandName": "EmailBrand",
+      "exportName": "default",
+      "name": "Email",
+      "type": Object {
+        "kind": "String",
+        "loc": Object {
+          "fileName": "/src/example/scalars/Email.ts",
+          "line": 7,
+        },
+      },
+      "validatorLocation": Object {
+        "fileName": "/src/example/scalars/Email.ts",
+        "line": 6,
+      },
+      "validatorName": "validateEmail",
+    },
+    "RichText": Object {
+      "aliasLocation": Object {
+        "fileName": "/src/example/scalars/RichText.ts",
+        "line": 6,
+      },
+      "brandName": "RichTextBrand",
+      "exportName": "default",
+      "name": "RichText",
+      "type": Object {
+        "kind": "Object",
+        "loc": Object {
+          "fileName": "/src/example/scalars/RichText.ts",
+          "line": 7,
+        },
+        "properties": Object {
+          "___html": Object {
+            "kind": "String",
+            "loc": Object {
+              "fileName": "/src/example/scalars/RichText.ts",
+              "line": 3,
+            },
+          },
+        },
+      },
+      "validatorLocation": Object {
+        "fileName": "/src/example/scalars/RichText.ts",
+        "line": 6,
+      },
+      "validatorName": "validate",
+    },
+  },
+}
+`;
