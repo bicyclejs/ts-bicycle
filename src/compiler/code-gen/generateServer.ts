@@ -10,6 +10,7 @@ import {
   getValidationFunctionName,
 } from './generateScalars';
 import generateHeader from './generateHeader';
+import createImports from './createImports';
 
 export default function generateServer(
   ast: AST,
@@ -17,27 +18,29 @@ export default function generateServer(
   options: {shortenFileNames?: boolean} = {},
 ): string {
   const {classes, scalars, context} = ast;
+  outputFileName = resolve(outputFileName);
+  const outputDirName = dirname(outputFileName);
+  const result: string[] = [];
+  result.push(generateHeader());
+  const imports = createImports(result, {
+    QueryContext: {filename: 'bicycle/types/QueryContext'},
+    MutationContext: {filename: 'bicycle/types/MutationContext'},
+    Schema: {filename: 'bicycle/types/Schema'},
+    SchemaKind: {filename: 'bicycle/types/SchemaKind'},
+    Query: {filename: 'bicycle/types/Query'},
+    BicycleServer: {filename: 'bicycle/server-core'},
+    Options: {exportName: 'Options', filename: 'bicycle/server-core'},
+    ScalarTypes: {exportName: '*', filename: './scalar-types'},
+  });
   function getType(t: ValueType): string {
     return generateType(t, name => {
       if (name in scalars) {
-        return 'ScalarTypes.' + name;
+        return imports.get('ScalarTypes') + '.' + name;
       } else {
         return name;
       }
     });
   }
-  outputFileName = resolve(outputFileName);
-  const outputDirName = dirname(outputFileName);
-  const result: string[] = [];
-  result.push(generateHeader());
-  result.push(`import QueryContext from 'bicycle/types/QueryContext';`);
-  result.push(`import MutationContext from 'bicycle/types/MutationContext';`);
-  result.push(`import Schema from 'bicycle/types/Schema';`);
-  result.push(`import SchemaKind from 'bicycle/types/SchemaKind';`);
-  result.push(`import Query from 'bicycle/types/Query';`);
-  result.push(`import BicycleServer, {Options} from 'bicycle/server-core';`);
-  result.push(``);
-  result.push(`import * as ScalarTypes from './scalar-types';`);
   Object.keys(classes).forEach(className => {
     const exportedName = classes[className].exportedName;
     const specifier =
@@ -74,17 +77,17 @@ export default function generateServer(
     .join(' | ');
   result.push(``);
 
-  result.push(`const schema: Schema<${ctx}> = {`);
+  result.push(`const schema: ${imports.get('Schema')}<${ctx}> = {`);
   Object.keys(classes).forEach(className => {
     const cls: ParsedObject = options.shortenFileNames
       ? shortenFileNames(classes[className])
       : classes[className];
     result.push(`  ${className}: {`);
-    result.push(`    kind: SchemaKind.NodeType,`);
+    result.push(`    kind: ${imports.get('SchemaKind')}.NodeType,`);
     result.push(`    name: ${JSON.stringify(className)},`);
     result.push(`    description: undefined,`);
     result.push(
-      `    id(obj: ${className}, ctx: ${ctx}, qCtx: QueryContext<${ctx}>): string {`,
+      `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get('QueryContext')}<${ctx}>): string {`,
     );
     if (className === 'Root') {
       result.push(`      return "root";`);
@@ -104,7 +107,7 @@ export default function generateServer(
     result.push(`    fields: {`);
     function addAuth(arg: string, group: string) {
       result.push(
-        `        auth(value: ${className}, arg: ${arg}, context: ${ctx}, subQuery: true | Query, qCtx: QueryContext<${ctx}>): boolean | PromiseLike<boolean> {`,
+        `        auth(value: ${className}, arg: ${arg}, context: ${ctx}, subQuery: true | ${imports.get('Query')}, qCtx: ${imports.get('QueryContext')}<${ctx}>): boolean | PromiseLike<boolean> {`,
       );
       result.push(
         `          return value.$${group}(${[
@@ -128,13 +131,13 @@ export default function generateServer(
           const auth = cls.auth[propertyName];
           const valueType = properties[propertyName];
           result.push(`      ${propertyName}: {`);
-          result.push(`        kind: SchemaKind.FieldMethod,`);
+          result.push(`        kind: ${imports.get('SchemaKind')}.FieldMethod,`);
           result.push(`        name: ${JSON.stringify(propertyName)},`);
           result.push(`        description: undefined,`);
           result.push(
             `        resultType: (${JSON.stringify(valueType)} as any),`,
           );
-          result.push(`        argType: {kind: SchemaKind.Void},`);
+          result.push(`        argType: {kind: ${imports.get('SchemaKind')}.Void},`);
           if (auth === 'public') {
             result.push(`        auth: 'public',`);
           } else {
@@ -155,7 +158,7 @@ export default function generateServer(
         const auth = cls.auth[methodName];
         const method = cls.methods[methodName];
         result.push(`      ${methodName}: {`);
-        result.push(`        kind: SchemaKind.FieldMethod,`);
+        result.push(`        kind: ${imports.get('SchemaKind')}.FieldMethod,`);
         result.push(`        name: ${JSON.stringify(methodName)},`);
         result.push(`        description: undefined,`);
         result.push(
@@ -173,7 +176,7 @@ export default function generateServer(
         result.push(
           `        resolve(value: ${className}, args: ${getType(
             method.args,
-          )}, context: ${ctx}, subQuery: true | Query, qCtx: QueryContext<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
+          )}, context: ${ctx}, subQuery: true | ${imports.get('Query')}, qCtx: ${imports.get('QueryContext')}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
         );
         result.push(
           `          return value.${methodName}(${[
@@ -196,7 +199,7 @@ export default function generateServer(
         const auth = cls.staticAuth[methodName];
         const method = cls.staticMethods[methodName];
         result.push(`      ${methodName}: {`);
-        result.push(`        kind: SchemaKind.Mutation,`);
+        result.push(`        kind: ${imports.get('SchemaKind')}.Mutation,`);
         result.push(`        name: ${JSON.stringify(methodName)},`);
         result.push(`        description: undefined,`);
         result.push(
@@ -211,7 +214,7 @@ export default function generateServer(
           result.push(
             `        auth(arg: ${getType(
               method.args,
-            )}, context: ${ctx}, mCtx: MutationContext<${ctx}>): boolean | PromiseLike<boolean> {`,
+            )}, context: ${ctx}, mCtx: ${imports.get('MutationContext')}<${ctx}>): boolean | PromiseLike<boolean> {`,
           );
           result.push(
             `          return ${className}.$${auth}(${['arg', 'context', 'mCtx']
@@ -229,7 +232,7 @@ export default function generateServer(
         result.push(
           `        resolve(args: ${getType(
             method.args,
-          )}, context: ${ctx}, mCtx: MutationContext<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
+          )}, context: ${ctx}, mCtx: ${imports.get('MutationContext')}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
         );
         result.push(
           `          return ${className}.${methodName}(${[
@@ -250,7 +253,7 @@ export default function generateServer(
   Object.keys(scalars).forEach(scalarName => {
     const scalar = scalars[scalarName];
     result.push(`  ${scalarName}: {`);
-    result.push(`    kind: SchemaKind.Scalar,`);
+    result.push(`    kind: ${imports.get('SchemaKind')}.Scalar,`);
     result.push(`    name: ${JSON.stringify(scalarName)},`);
     result.push(`    description: undefined,`);
     result.push(`    baseType: (${JSON.stringify(scalar.type)} as any),`);
@@ -258,11 +261,12 @@ export default function generateServer(
     result.push(`  },`);
   });
   result.push(`};`);
-  result.push(`export {Options};`);
-  result.push(`export default class Server extends BicycleServer<${ctx}> {`);
-  result.push(`  constructor(options?: Options) {`);
+  result.push(`export {${imports.get('Options')}};`);
+  result.push(`export default class Server extends ${imports.get('BicycleServer')}<${ctx}> {`);
+  result.push(`  constructor(options?: ${imports.get('Options')}) {`);
   result.push(`    super(schema, options);`);
   result.push(`  }`);
   result.push(`}`);
+  imports.finish();
   return result.join('\n');
 }
