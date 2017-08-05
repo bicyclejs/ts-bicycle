@@ -76,6 +76,10 @@ export default function generateServer(
     })
     .join(' | ');
   result.push(``);
+  if ('Root' in classes) {
+    result.push(`// root never has any actual data, so we create one reusable instance`);
+    result.push(`const root = new Root({});`);
+  }
 
   result.push(`const schema: ${imports.get('Schema')}<${ctx}> = {`);
   Object.keys(classes).forEach(className => {
@@ -86,18 +90,24 @@ export default function generateServer(
     result.push(`    kind: ${imports.get('SchemaKind')}.NodeType,`);
     result.push(`    name: ${JSON.stringify(className)},`);
     result.push(`    description: undefined,`);
-    result.push(
-      `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get('QueryContext')}<${ctx}>): string {`,
-    );
     if (className === 'Root') {
+      result.push(
+        `    id(): string {`,
+      );
       result.push(`      return "root";`);
     } else if (cls.idName in cls.methods) {
+      result.push(
+        `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get('QueryContext')}<${ctx}>): string {`,
+      );
       result.push(
         `      return '' + obj.${cls.idName}(${['this', 'ctx', 'true', 'qCtx']
           .slice(0, cls.methods[cls.idName].length)
           .join(', ')});`,
       );
     } else {
+      result.push(
+        `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get('QueryContext')}<${ctx}>): string {`,
+      );
       result.push(`      return '' + obj.data.${cls.idName};`);
     }
     result.push(`    },`);
@@ -107,10 +117,10 @@ export default function generateServer(
     result.push(`    fields: {`);
     function addAuth(arg: string, group: string) {
       result.push(
-        `        auth(value: ${className}, arg: ${arg}, context: ${ctx}, subQuery: true | ${imports.get('Query')}, qCtx: ${imports.get('QueryContext')}<${ctx}>): boolean | PromiseLike<boolean> {`,
+        `        auth(value: ${className === 'Root' ? ctx : className}, arg: ${arg}, context: ${ctx}, subQuery: true | ${imports.get('Query')}, qCtx: ${imports.get('QueryContext')}<${ctx}>): boolean | PromiseLike<boolean> {`,
       );
       result.push(
-        `          return value.$${group}(${[
+        `          return ${className === 'Root' ? 'root' : 'value'}.$${group}(${[
           'arg',
           'context',
           'subQuery',
@@ -144,9 +154,9 @@ export default function generateServer(
             addAuth('void', auth);
           }
           result.push(
-            `        resolve(value: ${className}): ${getType(valueType)} {`,
+            `        resolve(value: ${className === 'Root' ? ctx : className}): ${getType(valueType)} {`,
           );
-          result.push(`          return value.data.${propertyName};`);
+          result.push(`          return ${className === 'Root' ? 'root' : 'value'}.data.${propertyName};`);
           result.push(`        },`);
           result.push(`      },`);
         }
@@ -174,12 +184,12 @@ export default function generateServer(
         }
         const returnType = getType(method.result);
         result.push(
-          `        resolve(value: ${className}, args: ${getType(
+          `        resolve(value: ${className === 'Root' ? ctx : className}, args: ${getType(
             method.args,
           )}, context: ${ctx}, subQuery: true | ${imports.get('Query')}, qCtx: ${imports.get('QueryContext')}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
         );
         result.push(
-          `          return value.${methodName}(${[
+          `          return ${className === 'Root' ? 'root' : 'value'}.${methodName}(${[
             'args',
             'context',
             'subQuery',

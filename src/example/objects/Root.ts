@@ -5,7 +5,7 @@ import Context from '../Context';
 import Person from './Person';
 import Email, {validateEmail} from '../scalars/Email';
 
-export class Root extends BaseObject<Context> {
+export class Root extends BaseObject<{}> {
   $auth = {
     public: ['people', 'person', 'peopleByEmail'],
   };
