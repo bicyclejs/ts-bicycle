@@ -12,6 +12,14 @@ import {
 import generateHeader from './generateHeader';
 import createImports from './createImports';
 
+function printType(value: ValueType): string {
+  if (value.kind === SchemaKind.Promise) {
+    return printType(value.result);
+  } else {
+    return JSON.stringify(value);
+  }
+}
+
 export default function generateServer(
   ast: AST,
   outputFileName: string,
@@ -145,7 +153,7 @@ export default function generateServer(
           result.push(`        name: ${JSON.stringify(propertyName)},`);
           result.push(`        description: undefined,`);
           result.push(
-            `        resultType: (${JSON.stringify(valueType)} as any),`,
+            `        resultType: (${printType(valueType)} as any),`,
           );
           result.push(`        argType: {kind: ${imports.get('SchemaKind')}.Void},`);
           if (auth === 'public') {
@@ -172,10 +180,10 @@ export default function generateServer(
         result.push(`        name: ${JSON.stringify(methodName)},`);
         result.push(`        description: undefined,`);
         result.push(
-          `        resultType: (${JSON.stringify(method.result)} as any),`,
+          `        resultType: (${printType(method.result)} as any),`,
         );
         result.push(
-          `        argType: (${JSON.stringify(method.args)} as any),`,
+          `        argType: (${printType(method.args)} as any),`,
         );
         if (auth === 'public') {
           result.push(`        auth: 'public',`);
@@ -213,10 +221,10 @@ export default function generateServer(
         result.push(`        name: ${JSON.stringify(methodName)},`);
         result.push(`        description: undefined,`);
         result.push(
-          `        resultType: (${JSON.stringify(method.result)} as any),`,
+          `        resultType: (${printType(method.result)} as any),`,
         );
         result.push(
-          `        argType: (${JSON.stringify(method.args)} as any),`,
+          `        argType: (${printType(method.args)} as any),`,
         );
         if (auth === 'public') {
           result.push(`        auth: 'public',`);
@@ -266,7 +274,7 @@ export default function generateServer(
     result.push(`    kind: ${imports.get('SchemaKind')}.Scalar,`);
     result.push(`    name: ${JSON.stringify(scalarName)},`);
     result.push(`    description: undefined,`);
-    result.push(`    baseType: (${JSON.stringify(scalar.type)} as any),`);
+    result.push(`    baseType: (${printType(scalar.type)} as any),`);
     result.push(`    validate: ${getValidationFunctionName(scalar)},`);
     result.push(`  },`);
   });

@@ -54,7 +54,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: "friends",
         description: undefined,
-        resultType: ({"kind":"Promise","result":{"kind":"List","element":{"kind":"Named","name":"Person"}},"loc":{"fileName":"/src/example/objects/Person.ts","line":25}} as any),
+        resultType: ({"kind":"List","element":{"kind":"Named","name":"Person"}} as any),
         argType: ({"kind":"Void","loc":{"fileName":"/src/example/objects/Person.ts","line":25}} as any),
         auth(value: Person, arg: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
           return value.$isSelf(arg, context);
@@ -67,7 +67,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: "enemies",
         description: undefined,
-        resultType: ({"kind":"Promise","result":{"kind":"List","element":{"kind":"Named","name":"Person"}},"loc":{"fileName":"/src/example/objects/Person.ts","line":30}} as any),
+        resultType: ({"kind":"List","element":{"kind":"Named","name":"Person"}} as any),
         argType: ({"kind":"Void","loc":{"fileName":"/src/example/objects/Person.ts","line":30}} as any),
         auth(value: Person, arg: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
           return value.$isSelf(arg, context);
@@ -106,7 +106,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: "people",
         description: undefined,
-        resultType: ({"kind":"Promise","result":{"kind":"List","element":{"kind":"Named","name":"Person"}},"loc":{"fileName":"/src/example/objects/Root.ts","line":12}} as any),
+        resultType: ({"kind":"List","element":{"kind":"Named","name":"Person"}} as any),
         argType: ({"kind":"Void","loc":{"fileName":"/src/example/objects/Root.ts","line":12}} as any),
         auth: 'public',
         resolve(value: _Context0, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
@@ -117,7 +117,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: "person",
         description: undefined,
-        resultType: ({"kind":"Promise","result":{"kind":"Named","name":"Person"},"loc":{"fileName":"/src/example/objects/Root.ts","line":15}} as any),
+        resultType: ({"kind":"Named","name":"Person"} as any),
         argType: ({"kind":"Number","loc":{"fileName":"/src/example/objects/Root.ts","line":15}} as any),
         auth: 'public',
         resolve(value: _Context0, args: number, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person | PromiseLike<Person> {
@@ -128,7 +128,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: "peopleByEmail",
         description: undefined,
-        resultType: ({"kind":"Promise","result":{"kind":"List","element":{"kind":"Named","name":"Person"}},"loc":{"fileName":"/src/example/objects/Root.ts","line":18}} as any),
+        resultType: ({"kind":"List","element":{"kind":"Named","name":"Person"}} as any),
         argType: ({"kind":"Named","name":"Email","loc":{"fileName":"/src/example/objects/Root.ts","line":18}} as any),
         auth: 'public',
         resolve(value: _Context0, args: ScalarTypes.Email, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
