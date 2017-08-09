@@ -289,7 +289,8 @@ export default function parseSchema(
         if (contextSymbol) {
           const parent: ts.Symbol | void = (contextSymbol as any).parent;
           if (parent && parent.flags & ts.SymbolFlags.Module) {
-            const fileName = JSON.parse(parent.name);
+            const rawFileName = JSON.parse(parent.name);
+            const fileName = parser.fileNames.get(rawFileName.toLowerCase()) || rawFileName;
             const exportName = contextSymbol.name;
             if (
               !result.context.some(
