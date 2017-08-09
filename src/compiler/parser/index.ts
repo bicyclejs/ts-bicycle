@@ -19,14 +19,15 @@ export default function parseSchema(
   const scalarInfoByAlias = new Map<ScalarName, ScalarInfo>();
   const scalarExportName = new Map<ScalarName, string>();
   // Visit every sourceFile in the program
+  const fileNamesSet = new Set(fileNames.map(n => n.toLowerCase()));
   for (const sourceFile of parser.program.getSourceFiles()) {
-    if (fileNames.includes(sourceFile.fileName)) {
+    if (fileNamesSet.has(sourceFile.fileName.toLowerCase())) {
       // Walk the tree to search for classes
       ts.forEachChild(sourceFile, visitScalars);
     }
   }
   for (const sourceFile of parser.program.getSourceFiles()) {
-    if (fileNames.includes(sourceFile.fileName)) {
+    if (fileNamesSet.has(sourceFile.fileName.toLowerCase())) {
       // Walk the tree to search for classes
       ts.forEachChild(sourceFile, visitClasses);
     }
