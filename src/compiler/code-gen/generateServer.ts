@@ -25,7 +25,7 @@ export default function generateServer(
   outputFileName: string,
   options: {shortenFileNames?: boolean} = {},
 ): string {
-  const {classes, scalars, context} = ast;
+  const {classes, scalars, enums, context} = ast;
   outputFileName = resolve(outputFileName);
   const outputDirName = dirname(outputFileName);
   const result: string[] = [];
@@ -42,7 +42,7 @@ export default function generateServer(
   });
   function getType(t: ValueType): string {
     return generateType(t, name => {
-      if (name in scalars) {
+      if (name in scalars || name in enums) {
         return imports.get('ScalarTypes') + '.' + name;
       } else {
         return name;
@@ -66,7 +66,12 @@ export default function generateServer(
     result.push(`import ${specifier} from '${source}';`);
   });
   Object.keys(scalars).forEach(scalarName => {
-    result.push(getScalarValidateFunctionImportStatement(scalars[scalarName], outputDirName));
+    result.push(
+      getScalarValidateFunctionImportStatement(
+        scalars[scalarName],
+        outputDirName,
+      ),
+    );
   });
 
   const ctx = context
@@ -85,7 +90,9 @@ export default function generateServer(
     .join(' | ');
   result.push(``);
   if ('Root' in classes) {
-    result.push(`// root never has any actual data, so we create one reusable instance`);
+    result.push(
+      `// root never has any actual data, so we create one reusable instance`,
+    );
     result.push(`const root = new Root({});`);
   }
 
@@ -99,13 +106,13 @@ export default function generateServer(
     result.push(`    name: ${JSON.stringify(className)},`);
     result.push(`    description: undefined,`);
     if (className === 'Root') {
-      result.push(
-        `    id(): string {`,
-      );
+      result.push(`    id(): string {`);
       result.push(`      return "root";`);
     } else if (cls.idName in cls.methods) {
       result.push(
-        `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get('QueryContext')}<${ctx}>): string {`,
+        `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get(
+          'QueryContext',
+        )}<${ctx}>): string {`,
       );
       result.push(
         `      return '' + obj.${cls.idName}(${['this', 'ctx', 'true', 'qCtx']
@@ -114,7 +121,9 @@ export default function generateServer(
       );
     } else {
       result.push(
-        `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get('QueryContext')}<${ctx}>): string {`,
+        `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get(
+          'QueryContext',
+        )}<${ctx}>): string {`,
       );
       result.push(`      return '' + obj.data.${cls.idName};`);
     }
@@ -125,15 +134,18 @@ export default function generateServer(
     result.push(`    fields: {`);
     function addAuth(arg: string, group: string) {
       result.push(
-        `        auth(value: ${className === 'Root' ? ctx : className}, arg: ${arg}, context: ${ctx}, subQuery: true | ${imports.get('Query')}, qCtx: ${imports.get('QueryContext')}<${ctx}>): boolean | PromiseLike<boolean> {`,
+        `        auth(value: ${className === 'Root'
+          ? ctx
+          : className}, arg: ${arg}, context: ${ctx}, subQuery: true | ${imports.get(
+          'Query',
+        )}, qCtx: ${imports.get(
+          'QueryContext',
+        )}<${ctx}>): boolean | PromiseLike<boolean> {`,
       );
       result.push(
-        `          return ${className === 'Root' ? 'root' : 'value'}.$${group}(${[
-          'arg',
-          'context',
-          'subQuery',
-          'qCtx',
-        ]
+        `          return ${className === 'Root'
+          ? 'root'
+          : 'value'}.$${group}(${['arg', 'context', 'subQuery', 'qCtx']
           .slice(
             0,
             cls.methods['$' + group] ? cls.methods['$' + group].length : 0,
@@ -149,22 +161,30 @@ export default function generateServer(
           const auth = cls.auth[propertyName];
           const valueType = properties[propertyName];
           result.push(`      ${propertyName}: {`);
-          result.push(`        kind: ${imports.get('SchemaKind')}.FieldMethod,`);
+          result.push(
+            `        kind: ${imports.get('SchemaKind')}.FieldMethod,`,
+          );
           result.push(`        name: ${JSON.stringify(propertyName)},`);
           result.push(`        description: undefined,`);
+          result.push(`        resultType: (${printType(valueType)} as any),`);
           result.push(
-            `        resultType: (${printType(valueType)} as any),`,
+            `        argType: {kind: ${imports.get('SchemaKind')}.Void},`,
           );
-          result.push(`        argType: {kind: ${imports.get('SchemaKind')}.Void},`);
           if (auth === 'public') {
             result.push(`        auth: 'public',`);
           } else {
             addAuth('void', auth);
           }
           result.push(
-            `        resolve(value: ${className === 'Root' ? ctx : className}): ${getType(valueType)} {`,
+            `        resolve(value: ${className === 'Root'
+              ? ctx
+              : className}): ${getType(valueType)} {`,
           );
-          result.push(`          return ${className === 'Root' ? 'root' : 'value'}.data.${propertyName};`);
+          result.push(
+            `          return ${className === 'Root'
+              ? 'root'
+              : 'value'}.data.${propertyName};`,
+          );
           result.push(`        },`);
           result.push(`      },`);
         }
@@ -182,9 +202,7 @@ export default function generateServer(
         result.push(
           `        resultType: (${printType(method.result)} as any),`,
         );
-        result.push(
-          `        argType: (${printType(method.args)} as any),`,
-        );
+        result.push(`        argType: (${printType(method.args)} as any),`);
         if (auth === 'public') {
           result.push(`        auth: 'public',`);
         } else {
@@ -192,17 +210,20 @@ export default function generateServer(
         }
         const returnType = getType(method.result);
         result.push(
-          `        resolve(value: ${className === 'Root' ? ctx : className}, args: ${getType(
+          `        resolve(value: ${className === 'Root'
+            ? ctx
+            : className}, args: ${getType(
             method.args,
-          )}, context: ${ctx}, subQuery: true | ${imports.get('Query')}, qCtx: ${imports.get('QueryContext')}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
+          )}, context: ${ctx}, subQuery: true | ${imports.get(
+            'Query',
+          )}, qCtx: ${imports.get(
+            'QueryContext',
+          )}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
         );
         result.push(
-          `          return ${className === 'Root' ? 'root' : 'value'}.${methodName}(${[
-            'args',
-            'context',
-            'subQuery',
-            'qCtx',
-          ]
+          `          return ${className === 'Root'
+            ? 'root'
+            : 'value'}.${methodName}(${['args', 'context', 'subQuery', 'qCtx']
             .slice(0, method.length)
             .join(', ')});`,
         );
@@ -223,16 +244,16 @@ export default function generateServer(
         result.push(
           `        resultType: (${printType(method.result)} as any),`,
         );
-        result.push(
-          `        argType: (${printType(method.args)} as any),`,
-        );
+        result.push(`        argType: (${printType(method.args)} as any),`);
         if (auth === 'public') {
           result.push(`        auth: 'public',`);
         } else {
           result.push(
             `        auth(arg: ${getType(
               method.args,
-            )}, context: ${ctx}, mCtx: ${imports.get('MutationContext')}<${ctx}>): boolean | PromiseLike<boolean> {`,
+            )}, context: ${ctx}, mCtx: ${imports.get(
+              'MutationContext',
+            )}<${ctx}>): boolean | PromiseLike<boolean> {`,
           );
           result.push(
             `          return ${className}.$${auth}(${['arg', 'context', 'mCtx']
@@ -250,7 +271,9 @@ export default function generateServer(
         result.push(
           `        resolve(args: ${getType(
             method.args,
-          )}, context: ${ctx}, mCtx: ${imports.get('MutationContext')}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
+          )}, context: ${ctx}, mCtx: ${imports.get(
+            'MutationContext',
+          )}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
         );
         result.push(
           `          return ${className}.${methodName}(${[
@@ -280,7 +303,11 @@ export default function generateServer(
   });
   result.push(`};`);
   result.push(`export {${imports.get('Options')}};`);
-  result.push(`export default class Server extends ${imports.get('BicycleServer')}<${ctx}> {`);
+  result.push(
+    `export default class Server extends ${imports.get(
+      'BicycleServer',
+    )}<${ctx}> {`,
+  );
   result.push(`  constructor(options?: ${imports.get('Options')}) {`);
   result.push(`    super(schema, options);`);
   result.push(`  }`);

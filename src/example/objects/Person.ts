@@ -1,6 +1,7 @@
 import Object from 'bicycle/BaseObject';
 
 import Context from '../Context';
+import MyEnum from '../scalars/MyEnum';
 
 export interface PersonDataLink {
   person: Person;
@@ -15,7 +16,7 @@ export interface PersonData {
 
 export default class Person extends Object<PersonData> {
   $auth = {
-    public: ['id', 'name'],
+    public: ['id', 'name', 'objectWithOptionalProperty', 'enumField'],
     isSelf: ['friends', 'enemies'],
   };
   $isSelf(args: {} | void, ctx: Context): boolean {
@@ -31,6 +32,13 @@ export default class Person extends Object<PersonData> {
     return this.data.links
       .filter(link => link.linkType === 'enemy')
       .map(link => link.person);
+  }
+
+  objectWithOptionalProperty(): {foo?: string} {
+    return {};
+  }
+  enumField(): MyEnum {
+    return MyEnum.a;
   }
 
   static $auth = {

@@ -18,7 +18,11 @@ export function getScalarValidateFunctionImportStatement(
         ? `{${validateName}}`
         : `{${exportedName} as ${validateName}}`;
   const source =
-    './' + relative(outputDirName, scalar.validatorLocation.fileName).replace(/\.tsx?$/, '');
+    './' +
+    relative(outputDirName, scalar.validatorLocation.fileName).replace(
+      /\.tsx?$/,
+      '',
+    );
   return `import ${specifier} from '${source}';`;
 }
 export function getScalarImportStatement(
@@ -34,22 +38,42 @@ export function getScalarImportStatement(
         ? `{${localName}}`
         : `{${exportedName} as ${localName}}`;
   const source =
-    './' + relative(outputDirName, scalar.validatorLocation.fileName).replace(/\.tsx?$/, '');
+    './' +
+    relative(outputDirName, scalar.validatorLocation.fileName).replace(
+      /\.tsx?$/,
+      '',
+    );
   return `import ${specifier} from '${source}';`;
 }
 export default function generateScalars(ast: AST, outputFileName: string) {
   const scalars = Object.keys(ast.scalars)
     .sort()
     .map(name => ast.scalars[name]);
+  const enums = Object.keys(ast.enums).sort().map(name => ast.enums[name]);
   const result: string[] = [];
   result.push(generateHeader());
   const outputDirName = dirname(outputFileName);
   scalars.forEach(scalar => {
     result.push(getScalarImportStatement(scalar, outputDirName));
   });
+  enums.forEach(enumDef => {
+    const specifier =
+      enumDef.exportName === 'default'
+        ? enumDef.name
+        : enumDef.exportName === enumDef.name
+          ? `{${enumDef.name}}`
+          : `{${enumDef.exportName} as ${enumDef.name}}`;
+    const source =
+      './' +
+      relative(outputDirName, enumDef.location.fileName).replace(/\.tsx?$/, '');
+    result.push(`import ${specifier} from '${source}'`);
+  });
   result.push(``);
   scalars.forEach(scalar => {
     result.push(`export {${scalar.name}};`);
+  });
+  enums.forEach(enumDef => {
+    result.push(`export {${enumDef.name}};`);
   });
   result.push(``);
 

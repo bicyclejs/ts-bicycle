@@ -10,7 +10,7 @@ export default class Parser {
   constructor(fileNames: string[], options: ts.CompilerOptions) {
     fileNames.forEach(name => {
       this.fileNames.set(name.toLowerCase(), name);
-    })
+    });
     // Build a program using the set of root file names in fileNames
     this.program = ts.createProgram(fileNames, options);
 
@@ -21,7 +21,8 @@ export default class Parser {
     const source = node.getSourceFile();
     const {line, character} = source.getLineAndCharacterOfPosition(node.pos);
     const lines = source.text.split('\n');
-    const fileName = this.fileNames.get(source.fileName.toLowerCase()) || source.fileName;
+    const fileName =
+      this.fileNames.get(source.fileName.toLowerCase()) || source.fileName;
     if (character >= lines[line].length) {
       return {fileName, line: line + 2};
     } else {

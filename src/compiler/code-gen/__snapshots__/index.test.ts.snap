@@ -29,10 +29,14 @@ export interface PersonCache {
   get(name: \\"name\\"): void | (null | string);
   get(name: \\"friends\\"): void | PersonCache[];
   get(name: \\"enemies\\"): void | PersonCache[];
+  get(name: \\"objectWithOptionalProperty\\"): void | {\\"foo\\"?: string};
+  get(name: \\"enumField\\"): void | ScalarTypes.MyEnum;
   set(name: \\"id\\", value: number): this;
   set(name: \\"name\\", value: (null | string)): this;
   set(name: \\"friends\\", value: PersonCache[]): this;
   set(name: \\"enemies\\", value: PersonCache[]): this;
+  set(name: \\"objectWithOptionalProperty\\", value: {\\"foo\\"?: string}): this;
+  set(name: \\"enumField\\", value: ScalarTypes.MyEnum): this;
 }
 export interface RootOptimisticUpdaters {
 }
@@ -70,8 +74,8 @@ exports[`compile query-types 1`] = `
 // do not edit by hand
 
 import {BaseQuery, addField, merge, Mutation, BaseRootQuery, stringify} from 'bicycle/typed-helpers/query';
-import {RootCache, GetOptimisticValue} from './optimistic';
 import * as ScalarTypes from './scalar-types';
+import {RootCache, GetOptimisticValue} from './optimistic';
 
 export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
   // fields
@@ -86,6 +90,12 @@ export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
   }
   enemies<TPerson>(Person: PersonQuery<TPerson>): PersonQuery<TResult & {enemies: TPerson[]}> {
     return new PersonQuery(addField(this._query, \\"enemies\\", (Person as any)._query));
+  }
+  get objectWithOptionalProperty(): PersonQuery<TResult & {objectWithOptionalProperty: {\\"foo\\"?: string}}> {
+    return new PersonQuery(addField(this._query, \\"objectWithOptionalProperty\\", true));
+  }
+  get enumField(): PersonQuery<TResult & {enumField: ScalarTypes.MyEnum}> {
+    return new PersonQuery(addField(this._query, \\"enumField\\", true));
   }
 
   merge<TOther>(other: PersonQuery<TOther>): PersonQuery<TResult & TOther> {
@@ -123,9 +133,15 @@ exports[`compile scalar-types 1`] = `
 
 import Email from './scalars/Email';
 import RichText from './scalars/RichText';
+import {EmailBrand} from './scalars/Email'
+import MyEnum from './scalars/MyEnum'
+import {RichTextBrand} from './scalars/RichText'
 
 export {Email};
 export {RichText};
+export {EmailBrand};
+export {MyEnum};
+export {RichTextBrand};
 "
 `;
 
@@ -137,8 +153,8 @@ import Schema, {} from 'bicycle/types/Schema';
 import SchemaKind, {} from 'bicycle/types/SchemaKind';
 import QueryContext, {} from 'bicycle/types/QueryContext';
 import Query, {} from 'bicycle/types/Query';
-import MutationContext, {} from 'bicycle/types/MutationContext';
 import * as ScalarTypes from './scalar-types';
+import MutationContext, {} from 'bicycle/types/MutationContext';
 import BicycleServer, {Options} from 'bicycle/server-core';
 import Person from './objects/Person';
 import {Root} from './objects/Root';
@@ -164,7 +180,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"id\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Number\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":11}} as any),
+        resultType: ({\\"kind\\":\\"Number\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":12}} as any),
         argType: {kind: SchemaKind.Void},
         auth: 'public',
         resolve(value: Person): number {
@@ -175,7 +191,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"name\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Null\\"},{\\"kind\\":\\"String\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":12}} as any),
+        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Null\\"},{\\"kind\\":\\"String\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":13}} as any),
         argType: {kind: SchemaKind.Void},
         auth: 'public',
         resolve(value: Person): (null | string) {
@@ -187,7 +203,7 @@ const schema: Schema<_Context0> = {
         name: \\"friends\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":25}} as any),
+        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":26}} as any),
         auth(value: Person, arg: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
           return value.$isSelf(arg, context);
         },
@@ -200,12 +216,34 @@ const schema: Schema<_Context0> = {
         name: \\"enemies\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":30}} as any),
+        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":31}} as any),
         auth(value: Person, arg: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
           return value.$isSelf(arg, context);
         },
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return value.enemies(args, context);
+        },
+      },
+      objectWithOptionalProperty: {
+        kind: SchemaKind.FieldMethod,
+        name: \\"objectWithOptionalProperty\\",
+        description: undefined,
+        resultType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"foo\\":{\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":37}},{\\"kind\\":\\"Void\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":37},\\"isOptional\\":true}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":37}} as any),
+        argType: ({\\"kind\\":\\"Void\\"} as any),
+        auth: 'public',
+        resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): {\\"foo\\"?: string} | PromiseLike<{\\"foo\\"?: string}> {
+          return value.objectWithOptionalProperty();
+        },
+      },
+      enumField: {
+        kind: SchemaKind.FieldMethod,
+        name: \\"enumField\\",
+        description: undefined,
+        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Literal\\",\\"value\\":10},{\\"kind\\":\\"Literal\\",\\"value\\":20}],\\"enumDeclaration\\":\\"MyEnum\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":40}} as any),
+        argType: ({\\"kind\\":\\"Void\\"} as any),
+        auth: 'public',
+        resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): ScalarTypes.MyEnum | PromiseLike<ScalarTypes.MyEnum> {
+          return value.enumField();
         },
       },
     },
@@ -215,7 +253,7 @@ const schema: Schema<_Context0> = {
         name: \\"set\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"Void\\"} as any),
-        argType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"field\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":40}},\\"value\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":40}}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":40}} as any),
+        argType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"field\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":48}},\\"value\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":48}}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":48}} as any),
         auth: 'public',
         resolve(args: {\\"field\\": string, \\"value\\": string}, context: _Context0, mCtx: MutationContext<_Context0>): void | PromiseLike<void> {
           return Person.set(args, context);

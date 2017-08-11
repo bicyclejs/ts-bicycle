@@ -14,4 +14,11 @@ export default interface AST {
   classes: {[className: string]: ParsedObject};
   context: {exportName: string; fileName: string}[];
   scalars: {[scalarName: string]: Scalar};
+  enums: {
+    [enumName: string]: {
+      name: string;
+      exportName: string;
+      location: LocationInfo;
+    };
+  };
 };

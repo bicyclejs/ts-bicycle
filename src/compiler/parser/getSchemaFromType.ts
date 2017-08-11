@@ -5,6 +5,7 @@ import Parser from './Parser';
 import {
   typeFlagsToString,
   isEnumType,
+  isEnumLiteralType,
   isLiteralType,
   isIntersectionType,
   isUnionType,
@@ -58,8 +59,18 @@ export default function getSchemaFromType(
 
   if (isEnumType(type)) {
     // TODO
+    console.log(type);
   }
-
+  if (isEnumLiteralType(type)) {
+    const result: ValueType = {
+      kind: SchemaKind.Union,
+      elements: type.types.map(t => getSchemaFromType(t, parser)),
+    };
+    if (type.aliasSymbol) {
+      (result as any).enumDeclaration = type.aliasSymbol.name;
+    }
+    return result;
+  }
   if (isUnionType(type)) {
     return {
       kind: SchemaKind.Union,
@@ -114,6 +125,17 @@ export default function getSchemaFromType(
             getSchemaFromType(parser.checker.getTypeFromTypeNode(t), parser),
           v,
         );
+        if (p.flags & ts.SymbolFlags.Optional) {
+          properties[p.name] = parser.withLoc(
+            () => ({
+              kind: SchemaKind.Union,
+              elements: [properties[p.name], {kind: SchemaKind.Void}],
+            }),
+            v,
+          );
+          // see code-gen/generateType for the nasty hack
+          (properties[p.name] as any).isOptional = true;
+        }
       }
     });
     return {

@@ -10,17 +10,20 @@ export type ScalarName = string & ScalarNameBrand;
 export interface ScalarInfo {
   brandName: string;
   baseType: ValueType;
-  loc: LocationInfo,
+  loc: LocationInfo;
   node: ts.Node;
 }
 export function scalarID(info: ScalarInfo): ScalarID {
-  return (info.brandName + ' at ' + resolve(info.loc.fileName) as ScalarID);
+  return (info.brandName + ' at ' + resolve(info.loc.fileName)) as ScalarID;
 }
-export function scalarIDFromBrand(brand: ts.EnumType, parser: Parser): ScalarID | void {
+export function scalarIDFromBrand(
+  brand: ts.EnumType,
+  parser: Parser,
+): ScalarID | void {
   const name = brand.symbol && brand.symbol.name;
   const declaration = brand.symbol && brand.symbol.valueDeclaration;
   if (name && declaration) {
     const loc = parser.getLocation(declaration);
-    return (name + ' at ' + resolve(loc.fileName) as ScalarID);
+    return (name + ' at ' + resolve(loc.fileName)) as ScalarID;
   }
 }

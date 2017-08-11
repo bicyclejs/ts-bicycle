@@ -3,7 +3,7 @@ import ValueType from 'bicycle/types/ValueType';
 
 export default function generateType(
   t: ValueType,
-  onNamedType?: (name: string) => string,
+  onNamedType: (name: string) => string,
 ): string {
   switch (t.kind) {
     case SchemaKind.Boolean:
@@ -13,11 +13,6 @@ export default function generateType(
     case SchemaKind.Literal:
       return JSON.stringify(t.value);
     case SchemaKind.Named:
-      if (!onNamedType) {
-        throw new Error(
-          'Cannot use named type as an argument or the result of a mutation',
-        );
-      }
       return onNamedType(t.name);
     case SchemaKind.Null:
       return 'null';
@@ -29,12 +24,21 @@ export default function generateType(
       return (
         '{' +
         Object.keys(t.properties)
-          .map(
-            name =>
+          .map(name => {
+            const type = t.properties[name];
+            const isOptional = (t.properties[name] as any).isOptional;
+            return (
               JSON.stringify(name) +
+              (isOptional ? '?' : '') +
               ': ' +
-              generateType(t.properties[name], onNamedType),
-          )
+              generateType(
+                isOptional && type.kind === SchemaKind.Union
+                  ? type.elements[0]
+                  : type,
+                onNamedType,
+              )
+            );
+          })
           .join(', ') +
         '}'
       );
@@ -43,6 +47,9 @@ export default function generateType(
     case SchemaKind.String:
       return 'string';
     case SchemaKind.Union:
+      if ((t as any).enumDeclaration) {
+        return onNamedType((t as any).enumDeclaration);
+      }
       return (
         '(' +
         t.elements.map(t => generateType(t, onNamedType)).join(' | ') +

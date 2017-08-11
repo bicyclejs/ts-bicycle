@@ -6,14 +6,20 @@ import extractProperties from './extractProperties';
 import createImports from './createImports';
 
 export default function generateOptimisticTypes(ast: AST): string {
-  const {classes, scalars} = ast;
+  const {classes, scalars, enums} = ast;
   const result: string[] = [];
   result.push(generateHeader());
 
   const imports = createImports(result, {
     ScalarTypes: {exportName: '*', filename: './scalar-types'},
-    BaseCache: {exportName: 'BaseCache', filename: 'bicycle/typed-helpers/optimistic'},
-    GetOptimisticValue: {exportName: 'GetOptimisticValue', filename: 'bicycle/typed-helpers/optimistic'},
+    BaseCache: {
+      exportName: 'BaseCache',
+      filename: 'bicycle/typed-helpers/optimistic',
+    },
+    GetOptimisticValue: {
+      exportName: 'GetOptimisticValue',
+      filename: 'bicycle/typed-helpers/optimistic',
+    },
   });
   result.push(``);
   result.push(`export {${imports.get('GetOptimisticValue')}};`);
@@ -31,7 +37,9 @@ export default function generateOptimisticTypes(ast: AST): string {
         `  ${mutationName}?: (mutation: {objectName: '${name}'; methodName: '${mutationName}'; args: ${generateType(
           t.args,
           name => imports.get('ScalarTypes') + '.' + name,
-        )}}, cache: RootCache, getOptimisticValue: ${imports.get('GetOptimisticValue')}) => any`,
+        )}}, cache: RootCache, getOptimisticValue: ${imports.get(
+          'GetOptimisticValue',
+        )}) => any`,
       );
     });
     result.push(`}`);
@@ -48,7 +56,7 @@ export default function generateOptimisticTypes(ast: AST): string {
       }
       result.push(
         `  get(${args.join(', ')}): void | ${generateType(resultType, name => {
-          if (name in scalars) {
+          if (name in scalars || name in enums) {
             return imports.get('ScalarTypes') + '.' + name;
           } else {
             return name + 'Cache';
@@ -68,7 +76,7 @@ export default function generateOptimisticTypes(ast: AST): string {
       }
       args.push(
         `value: ${generateType(resultType, name => {
-          if (name in scalars) {
+          if (name in scalars || name in enums) {
             return imports.get('ScalarTypes') + '.' + name;
           } else {
             return name + 'Cache';

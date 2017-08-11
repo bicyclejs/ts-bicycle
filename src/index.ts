@@ -26,7 +26,11 @@ function writeIfChanged(filename: string, content: string) {
     writeFileSync(filename, content);
   }
 }
-export default function compile(inputDirname: string, outputDirname: string, options: {config?: ParsedCommandLine, shortenFileNames?: boolean} = {}) {
+export default function compile(
+  inputDirname: string,
+  outputDirname: string,
+  options: {config?: ParsedCommandLine; shortenFileNames?: boolean} = {},
+) {
   inputDirname = inputDirname.replace(/(\\|\/)$/, '');
   outputDirname = outputDirname.replace(/(\\|\/)$/, '');
   mkdirp(outputDirname);
@@ -36,11 +40,19 @@ export default function compile(inputDirname: string, outputDirname: string, opt
 
   const config = options.config || loadTsConfig(inputDirname);
   const ast = parse(filenames, config.options);
-  writeIfChanged(outputDirname + '/scalar-types.ts', generateScalars(ast, outputDirname + '/scalar-types.ts'));
-  writeIfChanged(outputDirname + '/optimistic.ts', generateOptimisticTypes(ast));
+  writeIfChanged(
+    outputDirname + '/scalar-types.ts',
+    generateScalars(ast, outputDirname + '/scalar-types.ts'),
+  );
+  writeIfChanged(
+    outputDirname + '/optimistic.ts',
+    generateOptimisticTypes(ast),
+  );
   writeIfChanged(outputDirname + '/query-types.ts', generateQueryTypes(ast));
   writeIfChanged(outputDirname + '/query.ts', generateQuery(ast));
-  writeIfChanged(outputDirname + '/server.ts', generateServer(ast, outputDirname + '/server.ts', options));
+  writeIfChanged(
+    outputDirname + '/server.ts',
+    generateServer(ast, outputDirname + '/server.ts', options),
+  );
   writeIfChanged(outputDirname + '/client.ts', generateClient(ast));
 }
-

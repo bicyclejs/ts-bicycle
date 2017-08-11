@@ -6,22 +6,24 @@ Object {
     "Person": Object {
       "auth": Object {
         "enemies": "isSelf",
+        "enumField": "public",
         "friends": "isSelf",
         "id": "public",
         "name": "public",
+        "objectWithOptionalProperty": "public",
       },
       "data": Object {
         "kind": "Object",
         "loc": Object {
           "fileName": "/src/example/objects/Person.ts",
-          "line": 16,
+          "line": 17,
         },
         "properties": Object {
           "id": Object {
             "kind": "Number",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 11,
+              "line": 12,
             },
           },
           "links": Object {
@@ -42,14 +44,14 @@ Object {
                   "kind": "Union",
                   "loc": Object {
                     "fileName": "/src/example/objects/Person.ts",
-                    "line": 7,
+                    "line": 8,
                   },
                 },
                 "person": Object {
                   "kind": "Named",
                   "loc": Object {
                     "fileName": "/src/example/objects/Person.ts",
-                    "line": 6,
+                    "line": 7,
                   },
                   "name": "Person",
                 },
@@ -58,7 +60,7 @@ Object {
             "kind": "List",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 13,
+              "line": 14,
             },
           },
           "name": Object {
@@ -73,7 +75,7 @@ Object {
             "kind": "Union",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 12,
+              "line": 13,
             },
           },
         },
@@ -82,7 +84,7 @@ Object {
       "idName": "id",
       "loc": Object {
         "fileName": "/src/example/objects/Person.ts",
-        "line": 15,
+        "line": 16,
       },
       "methods": Object {
         "$isSelf": Object {
@@ -99,7 +101,7 @@ Object {
             "kind": "Union",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 21,
+              "line": 22,
             },
           },
           "length": 2,
@@ -107,7 +109,7 @@ Object {
             "kind": "Boolean",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 21,
+              "line": 22,
             },
           },
         },
@@ -116,7 +118,7 @@ Object {
             "kind": "Void",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 30,
+              "line": 31,
             },
           },
           "length": 2,
@@ -124,7 +126,7 @@ Object {
             "kind": "Promise",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 30,
+              "line": 31,
             },
             "result": Object {
               "element": Object {
@@ -135,12 +137,36 @@ Object {
             },
           },
         },
+        "enumField": Object {
+          "args": Object {
+            "kind": "Void",
+          },
+          "length": 0,
+          "result": Object {
+            "elements": Array [
+              Object {
+                "kind": "Literal",
+                "value": 10,
+              },
+              Object {
+                "kind": "Literal",
+                "value": 20,
+              },
+            ],
+            "enumDeclaration": "MyEnum",
+            "kind": "Union",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 40,
+            },
+          },
+        },
         "friends": Object {
           "args": Object {
             "kind": "Void",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 25,
+              "line": 26,
             },
           },
           "length": 2,
@@ -148,7 +174,7 @@ Object {
             "kind": "Promise",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 25,
+              "line": 26,
             },
             "result": Object {
               "element": Object {
@@ -156,6 +182,41 @@ Object {
                 "name": "Person",
               },
               "kind": "List",
+            },
+          },
+        },
+        "objectWithOptionalProperty": Object {
+          "args": Object {
+            "kind": "Void",
+          },
+          "length": 0,
+          "result": Object {
+            "kind": "Object",
+            "loc": Object {
+              "fileName": "/src/example/objects/Person.ts",
+              "line": 37,
+            },
+            "properties": Object {
+              "foo": Object {
+                "elements": Array [
+                  Object {
+                    "kind": "String",
+                    "loc": Object {
+                      "fileName": "/src/example/objects/Person.ts",
+                      "line": 37,
+                    },
+                  },
+                  Object {
+                    "kind": "Void",
+                  },
+                ],
+                "isOptional": true,
+                "kind": "Union",
+                "loc": Object {
+                  "fileName": "/src/example/objects/Person.ts",
+                  "line": 37,
+                },
+              },
             },
           },
         },
@@ -169,21 +230,21 @@ Object {
             "kind": "Object",
             "loc": Object {
               "fileName": "/src/example/objects/Person.ts",
-              "line": 40,
+              "line": 48,
             },
             "properties": Object {
               "field": Object {
                 "kind": "String",
                 "loc": Object {
                   "fileName": "/src/example/objects/Person.ts",
-                  "line": 40,
+                  "line": 48,
                 },
               },
               "value": Object {
                 "kind": "String",
                 "loc": Object {
                   "fileName": "/src/example/objects/Person.ts",
-                  "line": 40,
+                  "line": 48,
                 },
               },
             },
@@ -297,6 +358,32 @@ Object {
       "fileName": "/src/example/Context",
     },
   ],
+  "enums": Object {
+    "EmailBrand": Object {
+      "exportName": "EmailBrand",
+      "location": Object {
+        "fileName": "/src/example/scalars/Email.ts",
+        "line": 1,
+      },
+      "name": "EmailBrand",
+    },
+    "MyEnum": Object {
+      "exportName": "default",
+      "location": Object {
+        "fileName": "/src/example/scalars/MyEnum.ts",
+        "line": 1,
+      },
+      "name": "MyEnum",
+    },
+    "RichTextBrand": Object {
+      "exportName": "RichTextBrand",
+      "location": Object {
+        "fileName": "/src/example/scalars/RichText.ts",
+        "line": 1,
+      },
+      "name": "RichTextBrand",
+    },
+  },
   "scalars": Object {
     "Email": Object {
       "aliasLocation": Object {

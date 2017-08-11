@@ -13,7 +13,7 @@ export default function parseSchema(
   fileNames: string[],
   options: ts.CompilerOptions,
 ): AST {
-  const result: AST = {classes: {}, context: [], scalars: {}};
+  const result: AST = {classes: {}, context: [], scalars: {}, enums: {}};
   const parser = new Parser(fileNames, options);
 
   const scalarInfoByAlias = new Map<ScalarName, ScalarInfo>();
@@ -23,7 +23,7 @@ export default function parseSchema(
   for (const sourceFile of parser.program.getSourceFiles()) {
     if (fileNamesSet.has(sourceFile.fileName.toLowerCase())) {
       // Walk the tree to search for classes
-      ts.forEachChild(sourceFile, visitScalars);
+      ts.forEachChild(sourceFile, visitScalarsAndEnums);
     }
   }
   for (const sourceFile of parser.program.getSourceFiles()) {
@@ -36,17 +36,20 @@ export default function parseSchema(
 
   /** visit nodes finding exported classes */
 
-  function visitScalars(node: ts.Node) {
+  function visitScalarsAndEnums(node: ts.Node) {
     if (ts.isFunctionDeclaration(node)) {
       visitFunctionDeclartion(node);
     }
     if (ts.isTypeAliasDeclaration(node)) {
       visitTypeAliasDeclaration(node);
     }
+    if (ts.isEnumDeclaration(node)) {
+      visitEnumDeclaration(node);
+    }
     if (ts.isExportAssignment(node)) {
       visitExportAssignment(node);
     }
-    ts.forEachChild(node, visitScalars);
+    ts.forEachChild(node, visitScalarsAndEnums);
   }
   function visitClasses(node: ts.Node) {
     if (ts.isClassDeclaration(node)) {
@@ -55,7 +58,10 @@ export default function parseSchema(
     ts.forEachChild(node, visitClasses);
   }
 
-  function getScalarInfo(typeNode: ts.TypeNode, nameNode?: ts.Identifier): ScalarInfo | void {
+  function getScalarInfo(
+    typeNode: ts.TypeNode,
+    nameNode?: ts.Identifier,
+  ): ScalarInfo | void {
     const type = parser.checker.getTypeFromTypeNode(typeNode);
     if (isIntersectionType(type) && type.types.length === 2) {
       const [a, b] = type.types;
@@ -68,7 +74,12 @@ export default function parseSchema(
         );
         const brandName = brand.symbol && brand.symbol.name;
         if (brandName) {
-          return {brandName, baseType, loc: parser.getLocation(nameNode || typeNode), node: nameNode || typeNode};
+          return {
+            brandName,
+            baseType,
+            loc: parser.getLocation(nameNode || typeNode),
+            node: nameNode || typeNode,
+          };
         }
       }
     }
@@ -76,7 +87,7 @@ export default function parseSchema(
   function visitTypeAliasDeclaration(node: ts.TypeAliasDeclaration) {
     const scalar = getScalarInfo(node.type, node.name);
     if (scalar) {
-      const scalarName = (node.name.text as ScalarName);
+      const scalarName = node.name.text as ScalarName;
       parser.scalarNames.set(scalarID(scalar), scalarName);
       scalarInfoByAlias.set(scalarName, scalar);
       const isExported =
@@ -86,17 +97,43 @@ export default function parseSchema(
         node.modifiers &&
         node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword);
       if (isExported) {
-        scalarExportName.set(scalarName, isDefaultExport ? 'default' : scalarName);
+        scalarExportName.set(
+          scalarName,
+          isDefaultExport ? 'default' : scalarName,
+        );
       }
     }
+  }
+  function visitEnumDeclaration(node: ts.EnumDeclaration) {
+    const isExported =
+      node.modifiers &&
+      node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
+    const isDefaultExport =
+      node.modifiers &&
+      node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword);
+    result.enums[node.name.text] = {
+      name: node.name.text,
+      exportName: isExported
+        ? isDefaultExport ? 'default' : node.name.text
+        : 'UNKNOWN',
+      location: parser.getLocation(node),
+    };
   }
   function visitExportAssignment(node: ts.ExportAssignment) {
     // TODO: node.exportEquals
     if (ts.isIdentifier(node.expression)) {
-      const name = (node.expression.text as ScalarName);
-      const info = scalarInfoByAlias.get(name)
+      const name = node.expression.text as ScalarName;
+      const info = scalarInfoByAlias.get(name);
       if (info && info.loc.fileName === parser.getLocation(node).fileName) {
         scalarExportName.set(name, 'default');
+      }
+      if (node.expression.text in result.enums) {
+        const loc = parser.getLocation(node);
+        if (
+          loc.fileName === result.enums[node.expression.text].location.fileName
+        ) {
+          result.enums[node.expression.text].exportName = 'default';
+        }
       }
     }
   }
@@ -290,7 +327,8 @@ export default function parseSchema(
           const parent: ts.Symbol | void = (contextSymbol as any).parent;
           if (parent && parent.flags & ts.SymbolFlags.Module) {
             const rawFileName = JSON.parse(parent.name);
-            const fileName = parser.fileNames.get(rawFileName.toLowerCase()) || rawFileName;
+            const fileName =
+              parser.fileNames.get(rawFileName.toLowerCase()) || rawFileName;
             const exportName = contextSymbol.name;
             if (
               !result.context.some(

@@ -18,6 +18,9 @@ export function isLiteralType(
 export function isEnumType(type: ts.Type): type is ts.EnumType {
   return !!(type.flags & ts.TypeFlags.Enum);
 }
+export function isEnumLiteralType(type: ts.Type): type is ts.UnionType {
+  return !!(type.flags & ts.TypeFlags.EnumLiteral);
+}
 export function isObjectType(type: ts.Type): type is ts.ObjectType {
   return !!(type.flags & ts.TypeFlags.Object);
 }

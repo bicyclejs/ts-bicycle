@@ -6,7 +6,7 @@ import extractProperties from './extractProperties';
 import createImports from './createImports';
 
 export default function generateQueryTypes(ast: AST): string {
-  const {classes, scalars} = ast;
+  const {classes, scalars, enums} = ast;
   const result: string[] = [];
   result.push(generateHeader());
   const imports = createImports(result, {
@@ -15,11 +15,17 @@ export default function generateQueryTypes(ast: AST): string {
       exportName: 'BaseRootQuery',
       filename: 'bicycle/typed-helpers/query',
     },
-    BaseQuery: {exportName: 'BaseQuery', filename: 'bicycle/typed-helpers/query'},
+    BaseQuery: {
+      exportName: 'BaseQuery',
+      filename: 'bicycle/typed-helpers/query',
+    },
     Mutation: {exportName: 'Mutation', filename: 'bicycle/typed-helpers/query'},
     merge: {exportName: 'merge', filename: 'bicycle/typed-helpers/query'},
     ScalarTypes: {exportName: '*', filename: './scalar-types'},
-    stringify: {exportName: 'stringify', filename: 'bicycle/typed-helpers/query'},
+    stringify: {
+      exportName: 'stringify',
+      filename: 'bicycle/typed-helpers/query',
+    },
 
     // $RootCache, GetOptimisticValue
     Cache: {filename: 'bicycle/types/Cache'},
@@ -51,7 +57,7 @@ export default function generateQueryTypes(ast: AST): string {
       const generics: string[] = [];
       const subQueries: {name: string; type: string}[] = [];
       const resultTypeString = generateType(resultType, name => {
-        if (name in scalars) {
+        if (name in scalars || name in enums) {
           return imports.get('ScalarTypes') + '.' + name;
         }
         generics.push(`T${name}`);
@@ -151,9 +157,7 @@ export default function generateQueryTypes(ast: AST): string {
       result.push(
         `    return new ${imports.get('Mutation')}(${JSON.stringify(
           name + '.' + mutationName,
-        )}${args.length > 1
-          ? ', args'
-          : ', undefined'}, optimisticUpdate);`,
+        )}${args.length > 1 ? ', args' : ', undefined'}, optimisticUpdate);`,
       );
       result.push(`  }`);
     });
