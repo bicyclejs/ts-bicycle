@@ -28,11 +28,8 @@ export default function generateOptimisticTypes(ast: AST): string {
     const type = classes[name];
     const properties = extractProperties(type);
     result.push(`export interface ${name}OptimisticUpdaters {`);
-    Object.keys(type.staticMethods).forEach(mutationName => {
-      if (!(mutationName in type.staticAuth)) {
-        return;
-      }
-      const t = type.staticMethods[mutationName];
+    Object.keys(type.staticAPI.methods).forEach(mutationName => {
+      const t = type.staticAPI.methods[mutationName];
       result.push(
         `  ${mutationName}?: (mutation: {objectName: '${name}'; methodName: '${mutationName}'; args: ${generateType(
           t.args,

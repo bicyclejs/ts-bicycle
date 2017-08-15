@@ -183,7 +183,7 @@ const schema: Schema<_Context0> = {
         resultType: ({\\"kind\\":\\"Number\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":12}} as any),
         argType: {kind: SchemaKind.Void},
         auth: 'public',
-        resolve(value: Person): number {
+        resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): number {
           return value.data.id;
         },
       },
@@ -194,7 +194,7 @@ const schema: Schema<_Context0> = {
         resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Null\\"},{\\"kind\\":\\"String\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":13}} as any),
         argType: {kind: SchemaKind.Void},
         auth: 'public',
-        resolve(value: Person): (null | string) {
+        resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): (null | string) {
           return value.data.name;
         },
       },
@@ -204,8 +204,8 @@ const schema: Schema<_Context0> = {
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
         argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":26}} as any),
-        auth(value: Person, arg: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
-          return value.$isSelf(arg, context);
+        auth(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
+          return value.$isSelf(args, context);
         },
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return value.friends(args, context);
@@ -217,8 +217,8 @@ const schema: Schema<_Context0> = {
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
         argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":31}} as any),
-        auth(value: Person, arg: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
-          return value.$isSelf(arg, context);
+        auth(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
+          return value.$isSelf(args, context);
         },
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return value.enemies(args, context);
@@ -253,7 +253,7 @@ const schema: Schema<_Context0> = {
         name: \\"set\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"Void\\"} as any),
-        argType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"field\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":48}},\\"value\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":48}}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":48}} as any),
+        argType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"field\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":53}},\\"value\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":53}}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":53}} as any),
         auth: 'public',
         resolve(args: {\\"field\\": string, \\"value\\": string}, context: _Context0, mCtx: MutationContext<_Context0>): void | PromiseLike<void> {
           return Person.set(args, context);
@@ -307,6 +307,7 @@ const schema: Schema<_Context0> = {
       },
     },
     mutations: {
+
     },
   },
   Email: {

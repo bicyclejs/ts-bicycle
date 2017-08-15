@@ -10,24 +10,18 @@ export interface Property {
 
 export default function extractProperties(type: ParsedObject): Property[] {
   const result: Property[] = [];
-  if (type.data.kind === SchemaKind.Object) {
-    const properties = type.data.properties;
+  if (type.instanceAPI.properties) {
+    const properties = type.instanceAPI.properties;
     Object.keys(properties).forEach(propertyName => {
-      if (propertyName in type.methods || !(propertyName in type.auth)) {
-        return;
-      }
       result.push({propertyName, resultType: properties[propertyName]});
     });
   }
-  Object.keys(type.methods).forEach(methodName => {
-    if (!(methodName in type.auth)) {
-      return;
-    }
-    const args = type.methods[methodName].args;
+  Object.keys(type.instanceAPI.methods).forEach(methodName => {
+    const args = type.instanceAPI.methods[methodName].args;
     result.push({
       propertyName: methodName,
       argsType: args.kind === SchemaKind.Void ? undefined : args,
-      resultType: type.methods[methodName].result,
+      resultType: type.instanceAPI.methods[methodName].result,
     });
   });
   return result;

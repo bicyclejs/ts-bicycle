@@ -51,9 +51,6 @@ export default function generateQueryTypes(ast: AST): string {
     );
     result.push(`  // fields`);
     properties.forEach(({propertyName, argsType, resultType}) => {
-      if (!(propertyName in type.auth)) {
-        return;
-      }
       const generics: string[] = [];
       const subQueries: {name: string; type: string}[] = [];
       const resultTypeString = generateType(resultType, name => {
@@ -124,11 +121,8 @@ export default function generateQueryTypes(ast: AST): string {
     result.push(`  }`);
     result.push(``);
     result.push(`  // mutations`);
-    Object.keys(type.staticMethods).forEach(mutationName => {
-      if (!(mutationName in type.staticAuth)) {
-        return;
-      }
-      const t = type.staticMethods[mutationName];
+    Object.keys(type.staticAPI.methods).forEach(mutationName => {
+      const t = type.staticAPI.methods[mutationName];
       const args =
         t.args.kind === SchemaKind.Void
           ? []

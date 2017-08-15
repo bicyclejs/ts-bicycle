@@ -2,6 +2,10 @@ import * as ts from 'typescript';
 import ValueType, {LocationInfo} from 'bicycle/types/ValueType';
 import {ScalarID, ScalarName} from './Scalars';
 
+function isLocationInfo(node: any): node is LocationInfo {
+  return typeof node.fileName === 'string' && typeof node.line === 'number';
+}
+
 export default class Parser {
   public readonly program: ts.Program;
   public readonly checker: ts.TypeChecker;
@@ -40,8 +44,27 @@ export default class Parser {
         ex.message +=
           ' ' + locationInfo.fileName + ' line ' + locationInfo.line;
         ex.tsLocation = locationInfo;
+      } else {
+        if (/^Stack\:$/m.test(ex.message)) {
+          ex.message += '\n\nStack:\n\n';
+        } else {
+          ex.message = ex.message.trim();
+        }
+        ex.message +=
+          '\n  ' +
+          locationInfo.fileName +
+          ' line ' +
+          locationInfo.line +
+          '\n\n';
       }
       throw ex;
     }
+  }
+  createError(msg: string, node: ts.Node | LocationInfo): Error {
+    if (!isLocationInfo(node)) {
+      node = this.getLocation(node);
+    }
+    const str = msg + ' ' + node.fileName + ':' + node.line;
+    return new Error(str);
   }
 }

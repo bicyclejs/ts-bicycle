@@ -38,7 +38,13 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {kind: SchemaKind.Void},
         auth: 'public',
-        resolve(value: Person): number {
+        resolve(
+          value: Person,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): number {
           return value.data.id;
         },
       },
@@ -53,7 +59,13 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {kind: SchemaKind.Void},
         auth: 'public',
-        resolve(value: Person): null | string {
+        resolve(
+          value: Person,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): null | string {
           return value.data.name;
         },
       },
@@ -71,12 +83,12 @@ const schema: Schema<_Context0> = {
         } as any,
         auth(
           value: Person,
-          arg: void,
+          args: void,
           context: _Context0,
           subQuery: true | Query,
           qCtx: QueryContext<_Context0>,
         ): boolean | PromiseLike<boolean> {
-          return value.$isSelf(arg, context);
+          return value.$isSelf(args, context);
         },
         resolve(
           value: Person,
@@ -102,12 +114,12 @@ const schema: Schema<_Context0> = {
         } as any,
         auth(
           value: Person,
-          arg: void,
+          args: void,
           context: _Context0,
           subQuery: true | Query,
           qCtx: QueryContext<_Context0>,
         ): boolean | PromiseLike<boolean> {
-          return value.$isSelf(arg, context);
+          return value.$isSelf(args, context);
         },
         resolve(
           value: Person,
@@ -190,14 +202,14 @@ const schema: Schema<_Context0> = {
           properties: {
             field: {
               kind: 'String',
-              loc: {fileName: '/src/example/objects/Person.ts', line: 48},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 53},
             },
             value: {
               kind: 'String',
-              loc: {fileName: '/src/example/objects/Person.ts', line: 48},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 53},
             },
           },
-          loc: {fileName: '/src/example/objects/Person.ts', line: 48},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 53},
         } as any,
         auth: 'public',
         resolve(

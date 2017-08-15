@@ -1,18 +1,22 @@
 import ValueType, {LocationInfo} from 'bicycle/types/ValueType';
 
 export interface ParsedMethod {
+  name: string;
   args: ValueType;
   result: ValueType;
   length: number;
 }
 
+export interface ResolvedAPI {
+  auth: {[propertyName: string]: string};
+  authMethods: {[key: string]: ParsedMethod};
+  methods: {[key: string]: ParsedMethod};
+  properties?: {[key: string]: ValueType};
+}
 export default interface ParsedObject {
   exportedName: string;
   loc: LocationInfo;
   idName: string;
-  data: ValueType;
-  methods: {[name: string]: ParsedMethod};
-  staticMethods: {[name: string]: ParsedMethod};
-  auth: {[propertyName: string]: string};
-  staticAuth: {[mutationName: string]: string};
+  instanceAPI: ResolvedAPI;
+  staticAPI: ResolvedAPI;
 };

@@ -3,14 +3,14 @@ import shortenFileNames from '../utils/shortenFileNames';
 import AST from '../AST';
 import SchemaKind from 'bicycle/types/SchemaKind';
 import ValueType from 'bicycle/types/ValueType';
-import ParsedObject from '../ParsedObject';
+import ParsedObject, {ParsedMethod, ResolvedAPI} from '../ParsedObject';
 import generateType from './generateType';
 import {
   getScalarValidateFunctionImportStatement,
   getValidationFunctionName,
 } from './generateScalars';
 import generateHeader from './generateHeader';
-import createImports from './createImports';
+import createImports, {Imports} from './createImports';
 
 function printType(value: ValueType): string {
   if (value.kind === SchemaKind.Promise) {
@@ -108,7 +108,7 @@ export default function generateServer(
     if (className === 'Root') {
       result.push(`    id(): string {`);
       result.push(`      return "root";`);
-    } else if (cls.idName in cls.methods) {
+    } else if (cls.idName in cls.instanceAPI.methods) {
       result.push(
         `    id(obj: ${className}, ctx: ${ctx}, qCtx: ${imports.get(
           'QueryContext',
@@ -116,7 +116,7 @@ export default function generateServer(
       );
       result.push(
         `      return '' + obj.${cls.idName}(${['this', 'ctx', 'true', 'qCtx']
-          .slice(0, cls.methods[cls.idName].length)
+          .slice(0, cls.instanceAPI.methods[cls.idName].length)
           .join(', ')});`,
       );
     } else {
@@ -132,162 +132,40 @@ export default function generateServer(
     result.push(`      return obj instanceof ${className};`);
     result.push(`    },`);
     result.push(`    fields: {`);
-    function addAuth(arg: string, group: string) {
-      result.push(
-        `        auth(value: ${className === 'Root'
-          ? ctx
-          : className}, arg: ${arg}, context: ${ctx}, subQuery: true | ${imports.get(
-          'Query',
-        )}, qCtx: ${imports.get(
-          'QueryContext',
-        )}<${ctx}>): boolean | PromiseLike<boolean> {`,
-      );
-      result.push(
-        `          return ${className === 'Root'
-          ? 'root'
-          : 'value'}.$${group}(${['arg', 'context', 'subQuery', 'qCtx']
-          .slice(
-            0,
-            cls.methods['$' + group] ? cls.methods['$' + group].length : 0,
-          )
-          .join(', ')});`,
-      );
-      result.push(`        },`);
-    }
-    if (cls.data.kind === SchemaKind.Object) {
-      const properties = cls.data.properties;
-      Object.keys(properties).forEach(propertyName => {
-        if (propertyName in cls.auth && !(propertyName in cls.methods)) {
-          const auth = cls.auth[propertyName];
-          const valueType = properties[propertyName];
-          result.push(`      ${propertyName}: {`);
-          result.push(
-            `        kind: ${imports.get('SchemaKind')}.FieldMethod,`,
-          );
-          result.push(`        name: ${JSON.stringify(propertyName)},`);
-          result.push(`        description: undefined,`);
-          result.push(`        resultType: (${printType(valueType)} as any),`);
-          result.push(
-            `        argType: {kind: ${imports.get('SchemaKind')}.Void},`,
-          );
-          if (auth === 'public') {
-            result.push(`        auth: 'public',`);
-          } else {
-            addAuth('void', auth);
-          }
-          result.push(
-            `        resolve(value: ${className === 'Root'
-              ? ctx
-              : className}): ${getType(valueType)} {`,
-          );
-          result.push(
-            `          return ${className === 'Root'
-              ? 'root'
-              : 'value'}.data.${propertyName};`,
-          );
-          result.push(`        },`);
-          result.push(`      },`);
-        }
-      });
-    }
-
-    Object.keys(cls.methods).forEach(methodName => {
-      if (methodName in cls.auth) {
-        const auth = cls.auth[methodName];
-        const method = cls.methods[methodName];
-        result.push(`      ${methodName}: {`);
-        result.push(`        kind: ${imports.get('SchemaKind')}.FieldMethod,`);
-        result.push(`        name: ${JSON.stringify(methodName)},`);
-        result.push(`        description: undefined,`);
-        result.push(
-          `        resultType: (${printType(method.result)} as any),`,
-        );
-        result.push(`        argType: (${printType(method.args)} as any),`);
-        if (auth === 'public') {
-          result.push(`        auth: 'public',`);
-        } else {
-          addAuth(getType(method.args), auth);
-        }
-        const returnType = getType(method.result);
-        result.push(
-          `        resolve(value: ${className === 'Root'
-            ? ctx
-            : className}, args: ${getType(
-            method.args,
-          )}, context: ${ctx}, subQuery: true | ${imports.get(
-            'Query',
-          )}, qCtx: ${imports.get(
-            'QueryContext',
-          )}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
-        );
-        result.push(
-          `          return ${className === 'Root'
-            ? 'root'
-            : 'value'}.${methodName}(${['args', 'context', 'subQuery', 'qCtx']
-            .slice(0, method.length)
-            .join(', ')});`,
-        );
-        result.push(`        },`);
-        result.push(`      },`);
-      }
-    });
+    result.push(
+      generateAPI({
+        selfValue: className === 'Root' ? 'root' : 'value',
+        parameters: (argType: string) => [
+          `value: ${className === 'Root' ? ctx : className}`,
+          `args: ${argType}`,
+          `context: ${ctx}`,
+          `subQuery: true | ${imports.get('Query')}`,
+          `qCtx: ${imports.get('QueryContext')}<${ctx}>`,
+        ],
+        args: ['args', 'context', 'subQuery', 'qCtx'],
+        api: cls.instanceAPI,
+        imports,
+        kind: `${imports.get('SchemaKind')}.FieldMethod`,
+        getType,
+      }),
+    );
     result.push(`    },`);
     result.push(`    mutations: {`);
-    Object.keys(cls.staticMethods).forEach(methodName => {
-      if (methodName in cls.staticAuth) {
-        const auth = cls.staticAuth[methodName];
-        const method = cls.staticMethods[methodName];
-        result.push(`      ${methodName}: {`);
-        result.push(`        kind: ${imports.get('SchemaKind')}.Mutation,`);
-        result.push(`        name: ${JSON.stringify(methodName)},`);
-        result.push(`        description: undefined,`);
-        result.push(
-          `        resultType: (${printType(method.result)} as any),`,
-        );
-        result.push(`        argType: (${printType(method.args)} as any),`);
-        if (auth === 'public') {
-          result.push(`        auth: 'public',`);
-        } else {
-          result.push(
-            `        auth(arg: ${getType(
-              method.args,
-            )}, context: ${ctx}, mCtx: ${imports.get(
-              'MutationContext',
-            )}<${ctx}>): boolean | PromiseLike<boolean> {`,
-          );
-          result.push(
-            `          return ${className}.$${auth}(${['arg', 'context', 'mCtx']
-              .slice(
-                0,
-                cls.staticMethods['$' + auth]
-                  ? cls.staticMethods['$' + auth].length
-                  : 0,
-              )
-              .join(', ')});`,
-          );
-          result.push(`        },`);
-        }
-        const returnType = getType(method.result);
-        result.push(
-          `        resolve(args: ${getType(
-            method.args,
-          )}, context: ${ctx}, mCtx: ${imports.get(
-            'MutationContext',
-          )}<${ctx}>): ${returnType} | PromiseLike<${returnType}> {`,
-        );
-        result.push(
-          `          return ${className}.${methodName}(${[
-            'args',
-            'context',
-            'mCtx',
-          ]
-            .slice(0, method.length)
-            .join(', ')});`,
-        );
-        result.push(`        },`);
-        result.push(`      },`);
-      }
-    });
+    result.push(
+      generateAPI({
+        selfValue: className,
+        parameters: (argType: string) => [
+          `args: ${argType}`,
+          `context: ${ctx}`,
+          `mCtx: ${imports.get('MutationContext')}<${ctx}>`,
+        ],
+        args: ['args', 'context', 'mCtx'],
+        api: cls.staticAPI,
+        imports,
+        kind: `${imports.get('SchemaKind')}.Mutation`,
+        getType,
+      }),
+    );
     result.push(`    },`);
     result.push(`  },`);
   });
@@ -313,5 +191,107 @@ export default function generateServer(
   result.push(`  }`);
   result.push(`}`);
   imports.finish();
+  return result.join('\n');
+}
+
+function makeCall(
+  selfValue: string,
+  method: ParsedMethod,
+  args: string[],
+): string {
+  return `${selfValue}.${method.name}(${args
+    .slice(0, method.length)
+    .join(', ')})`;
+}
+interface APISpec {
+  selfValue: string;
+  parameters: (argType: string) => string[];
+  args: string[];
+  api: ResolvedAPI;
+  imports: Imports<any>;
+  kind: string;
+  getType: (vt: ValueType) => string;
+}
+function generateAPI({
+  selfValue,
+  parameters,
+  args,
+  api,
+  imports,
+  kind,
+  getType,
+}: APISpec) {
+  const result: string[] = [];
+  function addAuth(arg: string, group: string) {
+    result.push(
+      `        auth(${parameters(arg).join(
+        ', ',
+      )}): boolean | PromiseLike<boolean> {`,
+    );
+    result.push(
+      `          return ${makeCall(
+        selfValue,
+        api.authMethods['$' + group],
+        args,
+      )};`,
+    );
+    result.push(`        },`);
+  }
+  if (api.properties) {
+    const properties = api.properties;
+    Object.keys(properties).forEach(propertyName => {
+      if (propertyName in api.auth) {
+        const auth = api.auth[propertyName];
+        const valueType = properties[propertyName];
+        result.push(`      ${propertyName}: {`);
+        result.push(`        kind: ${kind},`);
+        result.push(`        name: ${JSON.stringify(propertyName)},`);
+        result.push(`        description: undefined,`);
+        result.push(`        resultType: (${printType(valueType)} as any),`);
+        result.push(
+          `        argType: {kind: ${imports.get('SchemaKind')}.Void},`,
+        );
+        if (auth === 'public') {
+          result.push(`        auth: 'public',`);
+        } else {
+          addAuth('void', auth);
+        }
+        result.push(
+          `        resolve(${parameters('void').join(', ')}): ${getType(
+            valueType,
+          )} {`,
+        );
+        result.push(`          return ${selfValue}.data.${propertyName};`);
+        result.push(`        },`);
+        result.push(`      },`);
+      }
+    });
+  }
+
+  Object.keys(api.methods).forEach(methodName => {
+    const auth = api.auth[methodName];
+    const method = api.methods[methodName];
+    result.push(`      ${methodName}: {`);
+    result.push(`        kind: ${kind},`);
+    result.push(`        name: ${JSON.stringify(methodName)},`);
+    result.push(`        description: undefined,`);
+    result.push(`        resultType: (${printType(method.result)} as any),`);
+    result.push(`        argType: (${printType(method.args)} as any),`);
+    const argType = getType(method.args);
+    if (auth === 'public') {
+      result.push(`        auth: 'public',`);
+    } else {
+      addAuth(argType, auth);
+    }
+    const returnType = getType(method.result);
+    result.push(
+      `        resolve(${parameters(argType).join(
+        ', ',
+      )}): ${returnType} | PromiseLike<${returnType}> {`,
+    );
+    result.push(`          return ${makeCall(selfValue, method, args)};`);
+    result.push(`        },`);
+    result.push(`      },`);
+  });
   return result.join('\n');
 }

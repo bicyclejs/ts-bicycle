@@ -41,6 +41,11 @@ export default class Person extends Object<PersonData> {
     return MyEnum.a;
   }
 
+  // any is not yet supported, but we don't expose this field so it's all good
+  anyField(): any {
+    return Math.random() > 0.5 ? 42 : {[Math.random()]: 42};
+  }
+
   static $auth = {
     public: ['set'],
   };

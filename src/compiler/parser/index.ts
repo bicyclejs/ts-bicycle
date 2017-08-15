@@ -1,12 +1,12 @@
 import * as ts from 'typescript';
-import createError from './createError';
 import getObjectDataTypeNode from './getObjectDataTypeNode';
 import getSchemaFromType from './getSchemaFromType';
 import Parser from './Parser';
 import AST from '../AST';
-import {ParsedMethod} from '../ParsedObject';
+import {ParsedMethod, ResolvedAPI} from '../ParsedObject';
 import SchemaKind from 'bicycle/types/SchemaKind';
-import {isIntersectionType, isEnumType} from './TypeUtils';
+import {LocationInfo} from 'bicycle/types/ValueType';
+import {isIntersectionType, isEnumType, isObjectType} from './TypeUtils';
 import {ScalarName, ScalarInfo, scalarID} from './Scalars';
 
 export default function parseSchema(
@@ -164,21 +164,21 @@ export default function parseSchema(
     }
   }
   function visitClassDeclaration(node: ts.ClassDeclaration) {
-    const dataType = getObjectDataTypeNode(node, parser);
-    if (!dataType) {
+    const dataTypeNode = getObjectDataTypeNode(node, parser);
+    if (!dataTypeNode) {
       // does not extend `Object`, ignoring
       return;
     }
 
     if (!node.name) {
-      throw createError(
+      throw parser.createError(
         `You cannot use an anonymous class as an object type in a bicycle schema.`,
         node,
       );
     }
     const className = node.name.text;
     if (className in result.classes) {
-      throw createError(
+      throw parser.createError(
         `Duplicate declaration for class ${className}`,
         node.name,
       );
@@ -187,7 +187,7 @@ export default function parseSchema(
       !node.modifiers ||
       !node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword)
     ) {
-      throw createError(
+      throw parser.createError(
         `${className} is not exported, you must export any Bicycle Schema Objects`,
         node.name,
       );
@@ -195,179 +195,253 @@ export default function parseSchema(
     const isDefaultExport = node.modifiers.some(
       m => m.kind === ts.SyntaxKind.DefaultKeyword,
     );
-    const methods = node.members.filter(isMethodDeclaration);
-    const instanceMethods = methods.filter(e => !isStatic(e));
-    const staticMethods = methods.filter(e => isStatic(e));
 
-    const data = parser.withLoc(
-      () =>
-        getSchemaFromType(parser.checker.getTypeFromTypeNode(dataType), parser),
-      dataType,
+    const idName = getIdName(node);
+    const instanceAPI = resolveAPI(
+      node.members.filter(e => !isStatic(e)),
+      idName,
     );
-    const methodSchemas = convertMethodsToSchema(instanceMethods);
+    const staticAPI = resolveAPI(node.members.filter(e => isStatic(e)));
 
-    let idName = 'id';
-    let propertyAuth = {};
-    let staticAuth = {};
-    node.members.forEach(member => {
-      if (ts.isPropertyDeclaration(member) && ts.isIdentifier(member.name)) {
-        if (member.name.text === '$id') {
-          if (!member.initializer || !ts.isStringLiteral(member.initializer)) {
-            throw createError(
-              'The $id must be initialised with a string literal.',
-              member.initializer || member,
-            );
-          }
-          idName = member.initializer.text;
+    const dataType = parser.checker.getTypeFromTypeNode(dataTypeNode);
+    const properties = (instanceAPI.properties = {});
+    if (isObjectType(dataType)) {
+      dataType.getProperties().forEach(p => {
+        if (p.name in instanceAPI.auth && !(p.name in instanceAPI.methods)) {
           if (
-            !(idName in methodSchemas) &&
-            !(data.kind === SchemaKind.Object && idName in data.properties)
+            p.valueDeclaration &&
+            ts.isPropertySignature(p.valueDeclaration) &&
+            p.valueDeclaration.type
           ) {
-            throw createError(
-              `The name "${idName}" is not one of the properties of ${className}.`,
-              member.initializer,
+            const v = p.valueDeclaration;
+            const t = p.valueDeclaration.type;
+            properties[p.name] = parser.withLoc(
+              () =>
+                getSchemaFromType(
+                  parser.checker.getTypeFromTypeNode(t),
+                  parser,
+                ),
+              v,
             );
+            if (p.flags & ts.SymbolFlags.Optional) {
+              properties[p.name] = parser.withLoc(
+                () => ({
+                  kind: SchemaKind.Union,
+                  elements: [properties[p.name], {kind: SchemaKind.Void}],
+                }),
+                v,
+              );
+              // see code-gen/generateType for the nasty hack
+              (properties[p.name] as any).isOptional = true;
+            }
           }
         }
+      });
+    }
+    if (
+      className !== 'Root' &&
+      !(idName.name in properties) &&
+      !(idName.name in instanceAPI.methods)
+    ) {
+      throw parser.createError(
+        `Could not find a property called "${idName.name}" in ${className}. Either define an ` +
+          `id property called "${idName.name}" that returns a unique string for each object, ` +
+          `or set the "idName" property to a property name that exists for your object.`,
+        idName.loc,
+      );
+    }
+
+    result.classes[className] = {
+      exportedName: isDefaultExport ? 'default' : className,
+      loc: parser.getLocation(node),
+      idName: idName.name,
+      instanceAPI,
+      staticAPI,
+    };
+  }
+  function hasMethod(elements: ts.ClassElement[], name: string) {
+    return elements.some(member => {
+      return (
+        ts.isMethodDeclaration(member) &&
+        ts.isIdentifier(member.name) &&
+        member.name.text === name
+      );
+    });
+  }
+  function resolveAPI(
+    members: ts.ClassElement[],
+    idName?: {name: string; loc: LocationInfo},
+  ): ResolvedAPI {
+    const authMethodNames = new Set<string>();
+    const exposedMethods = new Set<string>();
+    const auth: {[propertyName: string]: string} = {};
+    const authMethods: {[key: string]: ParsedMethod} = {};
+    const methods: {[key: string]: ParsedMethod} = {};
+    members.forEach(member => {
+      if (ts.isPropertyDeclaration(member) && ts.isIdentifier(member.name)) {
         if (member.name.text === '$auth') {
           if (
             !member.initializer ||
             !ts.isObjectLiteralExpression(member.initializer)
           ) {
-            throw createError(
+            throw parser.createError(
               'The $auth must be initialised with an object literal.',
               member.initializer || member,
             );
           }
-          const auth = {};
-          const seenElements: Set<string> = new Set();
           member.initializer.properties.forEach(property => {
             if (!ts.isPropertyAssignment(property)) {
-              throw createError(
+              throw parser.createError(
                 'Property in $auth must be a plain property with array as the value.',
                 property,
               );
             }
             if (!property.name || !ts.isIdentifier(property.name)) {
-              throw createError(
+              throw parser.createError(
                 'Property name in $auth must be an identifier.',
                 property.name || property,
               );
             }
             const groupName = property.name.text;
+            authMethodNames.add('$' + groupName);
+            if (
+              groupName !== 'public' &&
+              !hasMethod(members, '$' + groupName)
+            ) {
+              throw parser.createError(
+                `Could not find an implementation for $${groupName}`,
+                property.name,
+              );
+            }
             if (!ts.isArrayLiteralExpression(property.initializer)) {
-              throw createError(
+              throw parser.createError(
                 'Property value in $auth must be an array literal.',
                 property.initializer,
               );
             }
             property.initializer.elements.forEach(element => {
               if (!ts.isStringLiteral(element)) {
-                throw createError(
+                throw parser.createError(
                   'Property value in $auth must be an array of string literals.',
                   element,
                 );
               }
               const propertyName = element.text;
-              if (seenElements.has(propertyName)) {
-                throw createError(
-                  'Property value in $auth must only be in one auth category.',
+              if (auth[propertyName]) {
+                throw parser.createError(
+                  `"${propertyName} is in $auth categories of "${auth[
+                    propertyName
+                  ]}" and ` +
+                    `"${groupName}". We can't tell whether you expected us to require users ` +
+                    `to match "${auth[propertyName]} && ${groupName}" or ` +
+                    `"${auth[
+                      propertyName
+                    ]} || ${groupName}". You need to be explicit. ` +
+                    `You could set up a new group like: \n\n` +
+                    `async $${auth[
+                      propertyName
+                    ]}And${groupName[0].toUpperCase() +
+                      groupName.substr(1)}(args: any, ctx: Context) {\n` +
+                    `  return (await this.$${auth[
+                      propertyName
+                    ]}(args, ctx)) && (await this.$${groupName}(args, ctx));\n` +
+                    `}`,
                   element,
                 );
               }
-              seenElements.add(propertyName);
               auth[propertyName] = groupName;
+              exposedMethods.add(propertyName);
               return propertyName;
             });
           });
-          if (isStatic(member)) {
-            staticAuth = auth;
-          } else {
-            propertyAuth = auth;
-          }
         }
       }
     });
-    if (
-      className !== 'Root' &&
-      !(idName in methodSchemas) &&
-      !(data.kind === SchemaKind.Object && idName in data.properties)
-    ) {
-      throw createError(
-        `There is no property called "id" in the properties of ${className}. Either add one, or provide \n` +
-          `the idName property to override the default. e.g.\`idName = "myProperty";\``,
-        node,
-      );
-    }
-    result.classes[className] = {
-      exportedName: isDefaultExport ? 'default' : className,
-      loc: parser.getLocation(node),
-      idName,
-      data,
-      methods: methodSchemas,
-      staticMethods: convertMethodsToSchema(staticMethods),
-      auth: propertyAuth,
-      staticAuth,
-    };
+    members.forEach(member => {
+      if (ts.isMethodDeclaration(member) && ts.isIdentifier(member.name)) {
+        const name = member.name.text;
+        if (authMethodNames.has(name)) {
+          authMethods[name] = convertMethodToSchema(member, name);
+        }
+        if (exposedMethods.has(name) || (idName && idName.name === name)) {
+          methods[name] = convertMethodToSchema(member, name);
+        }
+      }
+    });
+    return {auth, authMethods, methods};
   }
-  function convertMethodsToSchema(
-    methods: ts.MethodDeclaration[],
-  ): {[key: string]: ParsedMethod} {
-    const results: {[key: string]: ParsedMethod} = {};
-    methods.forEach(method => {
-      if (!ts.isIdentifier(method.name)) {
-        return;
-      }
-      const paramType = method.parameters[0] && method.parameters[0].type;
-      const ctxType = method.parameters[1] && method.parameters[1].type;
-      if (ctxType) {
-        const contextSymbol = parser.checker.getTypeFromTypeNode(ctxType)
-          .symbol;
-        if (contextSymbol) {
-          const parent: ts.Symbol | void = (contextSymbol as any).parent;
-          if (parent && parent.flags & ts.SymbolFlags.Module) {
-            const rawFileName = JSON.parse(parent.name);
-            const fileName =
-              parser.fileNames.get(rawFileName.toLowerCase()) || rawFileName;
-            const exportName = contextSymbol.name;
-            if (
-              !result.context.some(
-                c => c.fileName === fileName && c.exportName === exportName,
-              )
-            ) {
-              result.context.push({fileName, exportName});
-            }
+  function getIdName(
+    node: ts.ClassDeclaration,
+  ): {name: string; loc: LocationInfo} {
+    const result = {name: 'id', loc: parser.getLocation(node.name || node)};
+    node.members.forEach(member => {
+      if (ts.isPropertyDeclaration(member) && ts.isIdentifier(member.name)) {
+        if (member.name.text === '$id') {
+          if (!member.initializer || !ts.isStringLiteral(member.initializer)) {
+            throw parser.createError(
+              'The $id must be initialised with a string literal.',
+              member.initializer || member,
+            );
           }
-          // TODO: warn if we can't find the context
+          result.name = member.initializer.text;
+          result.loc = parser.getLocation(member.initializer || member);
         }
       }
-      const methodType = method.type;
-      const length = method.parameters.length;
-      results[method.name.text] = {
-        args: paramType
-          ? parser.withLoc(
-              () =>
-                getSchemaFromType(
-                  parser.checker.getTypeFromTypeNode(paramType),
-                  parser,
-                ),
-              paramType,
-            )
-          : {kind: SchemaKind.Void},
-        result: methodType
-          ? parser.withLoc(
-              () =>
-                getSchemaFromType(
-                  parser.checker.getTypeFromTypeNode(methodType),
-                  parser,
-                ),
-              methodType,
-            )
-          : {kind: SchemaKind.Void},
-        length,
-      };
     });
-    return results;
+    return result;
+  }
+  function convertMethodToSchema(
+    method: ts.MethodDeclaration,
+    name: string,
+  ): ParsedMethod {
+    const paramType = method.parameters[0] && method.parameters[0].type;
+    const ctxType = method.parameters[1] && method.parameters[1].type;
+    if (ctxType) {
+      const contextSymbol = parser.checker.getTypeFromTypeNode(ctxType).symbol;
+      if (contextSymbol) {
+        const parent: ts.Symbol | void = (contextSymbol as any).parent;
+        if (parent && parent.flags & ts.SymbolFlags.Module) {
+          const rawFileName = JSON.parse(parent.name);
+          const fileName =
+            parser.fileNames.get(rawFileName.toLowerCase()) || rawFileName;
+          const exportName = contextSymbol.name;
+          if (
+            !result.context.some(
+              c => c.fileName === fileName && c.exportName === exportName,
+            )
+          ) {
+            result.context.push({fileName, exportName});
+          }
+        }
+        // TODO: warn if we can't find the context
+      }
+    }
+    const methodType = method.type;
+    const length = method.parameters.length;
+    return {
+      name,
+      args: paramType
+        ? parser.withLoc(
+            () =>
+              getSchemaFromType(
+                parser.checker.getTypeFromTypeNode(paramType),
+                parser,
+              ),
+            paramType,
+          )
+        : {kind: SchemaKind.Void},
+      result: methodType
+        ? parser.withLoc(
+            () =>
+              getSchemaFromType(
+                parser.checker.getTypeFromTypeNode(methodType),
+                parser,
+              ),
+            methodType,
+          )
+        : {kind: SchemaKind.Void},
+      length,
+    };
   }
 }
 
@@ -376,8 +450,4 @@ function isStatic(e: ts.ClassElement): boolean {
     e.modifiers &&
     e.modifiers.some(token => token.kind === ts.SyntaxKind.StaticKeyword)
   );
-}
-
-function isMethodDeclaration(e: ts.ClassElement): e is ts.MethodDeclaration {
-  return e.kind === ts.SyntaxKind.MethodDeclaration;
 }
