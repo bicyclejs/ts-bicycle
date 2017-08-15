@@ -3,6 +3,33 @@
 exports[`parse 1`] = `
 Object {
   "classes": Object {
+    "Invite": Object {
+      "exportedName": "default",
+      "idName": "id",
+      "instanceAPI": Object {
+        "auth": Object {},
+        "authMethods": Object {},
+        "methods": Object {},
+        "properties": Object {
+          "id": Object {
+            "kind": "String",
+            "loc": Object {
+              "fileName": "/src/example/objects/Other.ts",
+              "line": 3,
+            },
+          },
+        },
+      },
+      "loc": Object {
+        "fileName": "/src/example/objects/Other.ts",
+        "line": 2,
+      },
+      "staticAPI": Object {
+        "auth": Object {},
+        "authMethods": Object {},
+        "methods": Object {},
+      },
+    },
     "Person": Object {
       "exportedName": "default",
       "idName": "id",

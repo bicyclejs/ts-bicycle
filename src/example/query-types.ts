@@ -107,3 +107,12 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
 
   // mutations
 }
+export class InviteQuery<TResult = {}> extends BaseQuery<TResult> {
+  // fields
+
+  merge<TOther>(other: InviteQuery<TOther>): InviteQuery<TResult & TOther> {
+    return new InviteQuery(merge(this._query, other._query));
+  }
+
+  // mutations
+}

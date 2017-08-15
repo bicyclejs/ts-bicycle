@@ -8,3 +8,4 @@ export {getType};
 
 export const Person = new QueryTypes.PersonQuery<{}>({});
 export const Root = new QueryTypes.RootQuery<{}>({});
+export const Invite = new QueryTypes.InviteQuery<{}>({});

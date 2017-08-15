@@ -44,8 +44,12 @@ export interface RootCache {
     value: PersonCache[],
   ): this;
   getObject(typeName: 'Person', id: string): PersonCache;
+  getObject(typeName: 'Invite', id: string): InviteCache;
 }
+export interface InviteOptimisticUpdaters {}
+export interface InviteCache {}
 export default interface OptimisticUpdaters {
   Person?: PersonOptimisticUpdaters;
   Root?: RootOptimisticUpdaters;
+  Invite?: InviteOptimisticUpdaters;
 };

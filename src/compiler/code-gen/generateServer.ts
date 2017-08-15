@@ -270,6 +270,9 @@ function generateAPI({
 
   Object.keys(api.methods).forEach(methodName => {
     const auth = api.auth[methodName];
+    if (!auth) {
+      return;
+    }
     const method = api.methods[methodName];
     result.push(`      ${methodName}: {`);
     result.push(`        kind: ${kind},`);

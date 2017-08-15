@@ -207,7 +207,10 @@ export default function parseSchema(
     const properties = (instanceAPI.properties = {});
     if (isObjectType(dataType)) {
       dataType.getProperties().forEach(p => {
-        if (p.name in instanceAPI.auth && !(p.name in instanceAPI.methods)) {
+        if (
+          (p.name === idName.name || p.name in instanceAPI.auth) &&
+          !(p.name in instanceAPI.methods)
+        ) {
           if (
             p.valueDeclaration &&
             ts.isPropertySignature(p.valueDeclaration) &&

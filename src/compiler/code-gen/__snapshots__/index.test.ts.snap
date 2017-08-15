@@ -48,10 +48,16 @@ export interface RootCache {
   set(name: \\"person\\", args: number, value: PersonCache): this;
   set(name: \\"peopleByEmail\\", args: ScalarTypes.Email, value: PersonCache[]): this;
   getObject(typeName: 'Person', id: string): PersonCache;
+  getObject(typeName: 'Invite', id: string): InviteCache;
+}
+export interface InviteOptimisticUpdaters {
+}
+export interface InviteCache {
 }
 export default interface OptimisticUpdaters {
   Person?: PersonOptimisticUpdaters;
   Root?: RootOptimisticUpdaters;
+  Invite?: InviteOptimisticUpdaters;
 }"
 `;
 
@@ -66,6 +72,7 @@ export {getType};
 
 export const Person = new QueryTypes.PersonQuery<{}>({});
 export const Root = new QueryTypes.RootQuery<{}>({});
+export const Invite = new QueryTypes.InviteQuery<{}>({});
 "
 `;
 
@@ -124,6 +131,15 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
   }
 
   // mutations
+}
+export class InviteQuery<TResult = {}> extends BaseQuery<TResult> {
+  // fields
+
+  merge<TOther>(other: InviteQuery<TOther>): InviteQuery<TResult & TOther> {
+    return new InviteQuery(merge(this._query, other._query));
+  }
+
+  // mutations
 }"
 `;
 
@@ -158,6 +174,7 @@ import MutationContext, {} from 'bicycle/types/MutationContext';
 import BicycleServer, {Options} from 'bicycle/server-core';
 import Person from './objects/Person';
 import {Root} from './objects/Root';
+import Invite from './objects/Other';
 import {validateEmail} from './scalars/Email';
 import {validate as validateRichText} from './scalars/RichText';
 import _Context0 from './Context';
@@ -305,6 +322,23 @@ const schema: Schema<_Context0> = {
           return root.peopleByEmail(args, context);
         },
       },
+    },
+    mutations: {
+
+    },
+  },
+  Invite: {
+    kind: SchemaKind.NodeType,
+    name: \\"Invite\\",
+    description: undefined,
+    id(obj: Invite, ctx: _Context0, qCtx: QueryContext<_Context0>): string {
+      return '' + obj.data.id;
+    },
+    matches(obj: any): obj is Invite {
+      return obj instanceof Invite;
+    },
+    fields: {
+
     },
     mutations: {
 

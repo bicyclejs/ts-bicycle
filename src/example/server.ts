@@ -10,6 +10,7 @@ import MutationContext from 'bicycle/types/MutationContext';
 import BicycleServer, {Options} from 'bicycle/server-core';
 import Person from './objects/Person';
 import {Root} from './objects/Root';
+import Invite from './objects/Other';
 import {validateEmail} from './scalars/Email';
 import {validate as validateRichText} from './scalars/RichText';
 import _Context0 from './Context';
@@ -301,6 +302,19 @@ const schema: Schema<_Context0> = {
         },
       },
     },
+    mutations: {},
+  },
+  Invite: {
+    kind: SchemaKind.NodeType,
+    name: 'Invite',
+    description: undefined,
+    id(obj: Invite, ctx: _Context0, qCtx: QueryContext<_Context0>): string {
+      return '' + obj.data.id;
+    },
+    matches(obj: any): obj is Invite {
+      return obj instanceof Invite;
+    },
+    fields: {},
     mutations: {},
   },
   Email: {
