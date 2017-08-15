@@ -44,6 +44,9 @@ export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
   get enumField(): PersonQuery<TResult & {enumField: ScalarTypes.MyEnum}> {
     return new PersonQuery(addField(this._query, 'enumField', true));
   }
+  get anyField(): PersonQuery<TResult & {anyField: any}> {
+    return new PersonQuery(addField(this._query, 'anyField', true));
+  }
 
   merge<TOther>(other: PersonQuery<TOther>): PersonQuery<TResult & TOther> {
     return new PersonQuery(merge(this._query, other._query));

@@ -191,6 +191,26 @@ const schema: Schema<_Context0> = {
           return value.enumField();
         },
       },
+      anyField: {
+        kind: SchemaKind.FieldMethod,
+        name: 'anyField',
+        description: undefined,
+        resultType: {
+          kind: 'Any',
+          loc: {fileName: '/src/example/objects/Person.ts', line: 44},
+        } as any,
+        argType: {kind: 'Void'} as any,
+        auth: 'public',
+        resolve(
+          value: Person,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): any | PromiseLike<any> {
+          return value.anyField();
+        },
+      },
     },
     mutations: {
       set: {
@@ -203,14 +223,14 @@ const schema: Schema<_Context0> = {
           properties: {
             field: {
               kind: 'String',
-              loc: {fileName: '/src/example/objects/Person.ts', line: 53},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 52},
             },
             value: {
               kind: 'String',
-              loc: {fileName: '/src/example/objects/Person.ts', line: 53},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 52},
             },
           },
-          loc: {fileName: '/src/example/objects/Person.ts', line: 53},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 52},
         } as any,
         auth: 'public',
         resolve(

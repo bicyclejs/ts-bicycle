@@ -16,7 +16,13 @@ export interface PersonData {
 
 export default class Person extends Object<PersonData> {
   $auth = {
-    public: ['id', 'name', 'objectWithOptionalProperty', 'enumField'],
+    public: [
+      'id',
+      'name',
+      'objectWithOptionalProperty',
+      'enumField',
+      'anyField',
+    ],
     isSelf: ['friends', 'enemies'],
   };
   $isSelf(args: {} | void, ctx: Context): boolean {
@@ -41,7 +47,6 @@ export default class Person extends Object<PersonData> {
     return MyEnum.a;
   }
 
-  // any is not yet supported, but we don't expose this field so it's all good
   anyField(): any {
     return Math.random() > 0.5 ? 42 : {[Math.random()]: 42};
   }

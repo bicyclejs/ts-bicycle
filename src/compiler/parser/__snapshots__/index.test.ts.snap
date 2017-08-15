@@ -35,6 +35,7 @@ Object {
       "idName": "id",
       "instanceAPI": Object {
         "auth": Object {
+          "anyField": "public",
           "enemies": "isSelf",
           "enumField": "public",
           "friends": "isSelf",
@@ -72,6 +73,20 @@ Object {
           },
         },
         "methods": Object {
+          "anyField": Object {
+            "args": Object {
+              "kind": "Void",
+            },
+            "length": 0,
+            "name": "anyField",
+            "result": Object {
+              "kind": "Any",
+              "loc": Object {
+                "fileName": "/src/example/objects/Person.ts",
+                "line": 44,
+              },
+            },
+          },
           "enemies": Object {
             "args": Object {
               "kind": "Void",
@@ -224,21 +239,21 @@ Object {
               "kind": "Object",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 53,
+                "line": 52,
               },
               "properties": Object {
                 "field": Object {
                   "kind": "String",
                   "loc": Object {
                     "fileName": "/src/example/objects/Person.ts",
-                    "line": 53,
+                    "line": 52,
                   },
                 },
                 "value": Object {
                   "kind": "String",
                   "loc": Object {
                     "fileName": "/src/example/objects/Person.ts",
-                    "line": 53,
+                    "line": 52,
                   },
                 },
               },

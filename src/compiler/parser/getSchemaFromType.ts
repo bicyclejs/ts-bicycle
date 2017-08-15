@@ -144,5 +144,11 @@ export default function getSchemaFromType(
     };
   }
 
+  if (typeFlagsToString(type.flags) === 'Any, Narrowable, NotUnionOrUnit') {
+    return {
+      kind: SchemaKind.Any,
+    };
+  }
+
   throw new Error('Unkown type ' + typeFlagsToString(type.flags));
 }
