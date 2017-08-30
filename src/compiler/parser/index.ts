@@ -59,24 +59,44 @@ export default function parseSchema(
   }
 
   function getScalarInfo(
-    typeNode: ts.TypeNode,
+    typeNode: ts.TypeNode | ts.EnumDeclaration,
     nameNode?: ts.Identifier,
   ): ScalarInfo | void {
-    const type = parser.checker.getTypeFromTypeNode(typeNode);
-    if (isIntersectionType(type) && type.types.length === 2) {
-      const [a, b] = type.types;
-      const brand = isEnumType(a) ? a : isEnumType(b) ? b : undefined;
-      if (brand) {
-        // TODO:
-        const baseType = parser.withLoc(
-          () => getSchemaFromType(brand === a ? b : a, parser),
-          typeNode,
-        );
-        const brandName = brand.symbol && brand.symbol.name;
+    if (typeNode.kind === ts.SyntaxKind.EnumDeclaration) {
+      if (nameNode) {
+        return {
+          brandName: nameNode.text,
+          baseType: {kind: SchemaKind.Any},
+          loc: parser.getLocation(nameNode || typeNode),
+          node: nameNode || typeNode,
+        };
+      }
+    } else {
+      const type = parser.checker.getTypeFromTypeNode(typeNode);
+      if (isIntersectionType(type) && type.types.length === 2) {
+        const [a, b] = type.types;
+        const brand = isEnumType(a) ? a : isEnumType(b) ? b : undefined;
+        if (brand) {
+          const baseType = parser.withLoc(
+            () => getSchemaFromType(brand === a ? b : a, parser),
+            typeNode,
+          );
+          const brandName = brand.symbol && brand.symbol.name;
+          if (brandName) {
+            return {
+              brandName,
+              baseType,
+              loc: parser.getLocation(nameNode || typeNode),
+              node: nameNode || typeNode,
+            };
+          }
+        }
+      } else if (isEnumType(type)) {
+        const brandName = type.symbol && type.symbol.name;
         if (brandName) {
           return {
             brandName,
-            baseType,
+            baseType: {kind: SchemaKind.Any},
             loc: parser.getLocation(nameNode || typeNode),
             node: nameNode || typeNode,
           };
@@ -118,6 +138,18 @@ export default function parseSchema(
         : 'UNKNOWN',
       location: parser.getLocation(node),
     };
+    const scalar = getScalarInfo(node, node.name);
+    if (scalar && !parser.scalarNames.has(scalarID(scalar))) {
+      const scalarName = scalar.brandName as ScalarName;
+      parser.scalarNames.set(scalarID(scalar), scalarName);
+      scalarInfoByAlias.set(scalarName, scalar);
+      if (isExported) {
+        scalarExportName.set(
+          scalarName,
+          isDefaultExport ? 'default' : scalarName,
+        );
+      }
+    }
   }
   function visitExportAssignment(node: ts.ExportAssignment) {
     // TODO: node.exportEquals

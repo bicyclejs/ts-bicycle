@@ -80,7 +80,7 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {
           kind: 'Void',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 26},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 32},
         } as any,
         auth(
           value: Person,
@@ -111,7 +111,7 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {
           kind: 'Void',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 31},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 37},
         } as any,
         auth(
           value: Person,
@@ -144,15 +144,15 @@ const schema: Schema<_Context0> = {
               elements: [
                 {
                   kind: 'String',
-                  loc: {fileName: '/src/example/objects/Person.ts', line: 37},
+                  loc: {fileName: '/src/example/objects/Person.ts', line: 43},
                 },
                 {kind: 'Void'},
               ],
-              loc: {fileName: '/src/example/objects/Person.ts', line: 37},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 43},
               isOptional: true,
             },
           },
-          loc: {fileName: '/src/example/objects/Person.ts', line: 37},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 43},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -177,7 +177,7 @@ const schema: Schema<_Context0> = {
             {kind: 'Literal', value: 20},
           ],
           enumDeclaration: 'MyEnum',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 40},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 46},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -197,7 +197,7 @@ const schema: Schema<_Context0> = {
         description: undefined,
         resultType: {
           kind: 'Any',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 44},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 50},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -223,14 +223,14 @@ const schema: Schema<_Context0> = {
           properties: {
             field: {
               kind: 'String',
-              loc: {fileName: '/src/example/objects/Person.ts', line: 52},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 58},
             },
             value: {
               kind: 'String',
-              loc: {fileName: '/src/example/objects/Person.ts', line: 52},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 58},
             },
           },
-          loc: {fileName: '/src/example/objects/Person.ts', line: 52},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 58},
         } as any,
         auth: 'public',
         resolve(
@@ -264,7 +264,7 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {
           kind: 'Void',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 12},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 13},
         } as any,
         auth: 'public',
         resolve(
@@ -284,7 +284,7 @@ const schema: Schema<_Context0> = {
         resultType: {kind: 'Named', name: 'Person'} as any,
         argType: {
           kind: 'Number',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 15},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 16},
         } as any,
         auth: 'public',
         resolve(
@@ -308,7 +308,7 @@ const schema: Schema<_Context0> = {
         argType: {
           kind: 'Named',
           name: 'Email',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 18},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 19},
         } as any,
         auth: 'public',
         resolve(
@@ -319,6 +319,27 @@ const schema: Schema<_Context0> = {
           qCtx: QueryContext<_Context0>,
         ): Person[] | PromiseLike<Person[]> {
           return root.peopleByEmail(args, context);
+        },
+      },
+      page: {
+        kind: SchemaKind.FieldMethod,
+        name: 'page',
+        description: undefined,
+        resultType: {
+          kind: 'Named',
+          name: 'RichText',
+          loc: {fileName: '/src/example/objects/Root.ts', line: 30},
+        } as any,
+        argType: {kind: 'Void'} as any,
+        auth: 'public',
+        resolve(
+          value: _Context0,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): ScalarTypes.RichText | PromiseLike<ScalarTypes.RichText> {
+          return root.page();
         },
       },
     },
@@ -355,24 +376,7 @@ const schema: Schema<_Context0> = {
     kind: SchemaKind.Scalar,
     name: 'RichText',
     description: undefined,
-    baseType: {
-      kind: 'Object',
-      properties: {
-        ___html: {
-          kind: 'String',
-          loc: {
-            fileName:
-              '/Users/forbeslindesay/GitHub/ts-bicycle/src/example/scalars/RichText.ts',
-            line: 3,
-          },
-        },
-      },
-      loc: {
-        fileName:
-          '/Users/forbeslindesay/GitHub/ts-bicycle/src/example/scalars/RichText.ts',
-        line: 7,
-      },
-    } as any,
+    baseType: {kind: 'Any'} as any,
     validate: validateRichText,
   },
 };

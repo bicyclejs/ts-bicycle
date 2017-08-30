@@ -1,10 +1,8 @@
-export const enum RichTextBrand {}
-
-type RichText = RichTextBrand & {__html: string};
+const enum RichText {}
 
 export default RichText;
 
-export function validate(value: {__html: string}): value is RichText {
-  // This would be checking that html has been sanitized
-  return value.__html.indexOf('<') === -1;
+export function validate(value: any): value is RichText {
+  // You can use any approach to validating a json schema here
+  return false;
 }

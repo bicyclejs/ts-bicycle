@@ -38,6 +38,7 @@ export interface RootCache {
   get(name: 'people'): void | PersonCache[];
   get(name: 'person', args: number): void | PersonCache;
   get(name: 'peopleByEmail', args: ScalarTypes.Email): void | PersonCache[];
+  get(name: 'page'): void | ScalarTypes.RichText;
   set(name: 'people', value: PersonCache[]): this;
   set(name: 'person', args: number, value: PersonCache): this;
   set(
@@ -45,6 +46,7 @@ export interface RootCache {
     args: ScalarTypes.Email,
     value: PersonCache[],
   ): this;
+  set(name: 'page', value: ScalarTypes.RichText): this;
   getObject(typeName: 'Person', id: string): PersonCache;
   getObject(typeName: 'Invite', id: string): InviteCache;
 }

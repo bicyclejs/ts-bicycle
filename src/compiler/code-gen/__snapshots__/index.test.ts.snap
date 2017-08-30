@@ -46,9 +46,11 @@ export interface RootCache {
   get(name: \\"people\\"): void | PersonCache[];
   get(name: \\"person\\", args: number): void | PersonCache;
   get(name: \\"peopleByEmail\\", args: ScalarTypes.Email): void | PersonCache[];
+  get(name: \\"page\\"): void | ScalarTypes.RichText;
   set(name: \\"people\\", value: PersonCache[]): this;
   set(name: \\"person\\", args: number, value: PersonCache): this;
   set(name: \\"peopleByEmail\\", args: ScalarTypes.Email, value: PersonCache[]): this;
+  set(name: \\"page\\", value: ScalarTypes.RichText): this;
   getObject(typeName: 'Person', id: string): PersonCache;
   getObject(typeName: 'Invite', id: string): InviteCache;
 }
@@ -130,6 +132,9 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
   peopleByEmail<TPerson>(args: ScalarTypes.Email, Person: PersonQuery<TPerson>): RootQuery<TResult & {peopleByEmail: TPerson[]}> {
     return new RootQuery(addField(this._query, args === undefined ? \\"peopleByEmail\\" : \\"peopleByEmail(\\" + stringify(args) + ')', (Person as any)._query));
   }
+  get page(): RootQuery<TResult & {page: ScalarTypes.RichText}> {
+    return new RootQuery(addField(this._query, \\"page\\", true));
+  }
 
   merge<TOther>(other: RootQuery<TOther>): RootQuery<TResult & TOther> {
     return new RootQuery(merge(this._query, other._query));
@@ -156,13 +161,13 @@ import Email from './scalars/Email';
 import RichText from './scalars/RichText';
 import {EmailBrand} from './scalars/Email'
 import MyEnum from './scalars/MyEnum'
-import {RichTextBrand} from './scalars/RichText'
+import RichText from './scalars/RichText'
 
 export {Email};
 export {RichText};
 export {EmailBrand};
 export {MyEnum};
-export {RichTextBrand};
+export {RichText};
 "
 `;
 
@@ -225,7 +230,7 @@ const schema: Schema<_Context0> = {
         name: \\"friends\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":26}} as any),
+        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":32}} as any),
         auth(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
           return value.$isSelf(args, context);
         },
@@ -238,7 +243,7 @@ const schema: Schema<_Context0> = {
         name: \\"enemies\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":31}} as any),
+        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":37}} as any),
         auth(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
           return value.$isSelf(args, context);
         },
@@ -250,7 +255,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"objectWithOptionalProperty\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"foo\\":{\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":37}},{\\"kind\\":\\"Void\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":37},\\"isOptional\\":true}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":37}} as any),
+        resultType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"foo\\":{\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":43}},{\\"kind\\":\\"Void\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":43},\\"isOptional\\":true}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":43}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): {\\"foo\\"?: string} | PromiseLike<{\\"foo\\"?: string}> {
@@ -261,7 +266,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"enumField\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Literal\\",\\"value\\":10},{\\"kind\\":\\"Literal\\",\\"value\\":20}],\\"enumDeclaration\\":\\"MyEnum\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":40}} as any),
+        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Literal\\",\\"value\\":10},{\\"kind\\":\\"Literal\\",\\"value\\":20}],\\"enumDeclaration\\":\\"MyEnum\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":46}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): ScalarTypes.MyEnum | PromiseLike<ScalarTypes.MyEnum> {
@@ -272,7 +277,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"anyField\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Any\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":44}} as any),
+        resultType: ({\\"kind\\":\\"Any\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":50}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): any | PromiseLike<any> {
@@ -286,7 +291,7 @@ const schema: Schema<_Context0> = {
         name: \\"set\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"Void\\"} as any),
-        argType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"field\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":52}},\\"value\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":52}}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":52}} as any),
+        argType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"field\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":58}},\\"value\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":58}}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":58}} as any),
         auth: 'public',
         resolve(args: {\\"field\\": string, \\"value\\": string}, context: _Context0, mCtx: MutationContext<_Context0>): void | PromiseLike<void> {
           return Person.set(args, context);
@@ -310,7 +315,7 @@ const schema: Schema<_Context0> = {
         name: \\"people\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":12}} as any),
+        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":13}} as any),
         auth: 'public',
         resolve(value: _Context0, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return root.people(args, context);
@@ -321,7 +326,7 @@ const schema: Schema<_Context0> = {
         name: \\"person\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"} as any),
-        argType: ({\\"kind\\":\\"Number\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":15}} as any),
+        argType: ({\\"kind\\":\\"Number\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":16}} as any),
         auth: 'public',
         resolve(value: _Context0, args: number, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person | PromiseLike<Person> {
           return root.person(args, context);
@@ -332,10 +337,21 @@ const schema: Schema<_Context0> = {
         name: \\"peopleByEmail\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Email\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":18}} as any),
+        argType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Email\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":19}} as any),
         auth: 'public',
         resolve(value: _Context0, args: ScalarTypes.Email, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return root.peopleByEmail(args, context);
+        },
+      },
+      page: {
+        kind: SchemaKind.FieldMethod,
+        name: \\"page\\",
+        description: undefined,
+        resultType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"RichText\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":30}} as any),
+        argType: ({\\"kind\\":\\"Void\\"} as any),
+        auth: 'public',
+        resolve(value: _Context0, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): ScalarTypes.RichText | PromiseLike<ScalarTypes.RichText> {
+          return root.page();
         },
       },
     },
@@ -371,7 +387,7 @@ const schema: Schema<_Context0> = {
     kind: SchemaKind.Scalar,
     name: \\"RichText\\",
     description: undefined,
-    baseType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"___html\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/Users/forbeslindesay/GitHub/ts-bicycle/src/example/scalars/RichText.ts\\",\\"line\\":3}}},\\"loc\\":{\\"fileName\\":\\"/Users/forbeslindesay/GitHub/ts-bicycle/src/example/scalars/RichText.ts\\",\\"line\\":7}} as any),
+    baseType: ({\\"kind\\":\\"Any\\"} as any),
     validate: validateRichText,
   },
 };

@@ -103,6 +103,9 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
       ),
     );
   }
+  get page(): RootQuery<TResult & {page: ScalarTypes.RichText}> {
+    return new RootQuery(addField(this._query, 'page', true));
+  }
 
   merge<TOther>(other: RootQuery<TOther>): RootQuery<TResult & TOther> {
     return new RootQuery(merge(this._query, other._query));

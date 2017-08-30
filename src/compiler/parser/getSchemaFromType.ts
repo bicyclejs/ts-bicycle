@@ -40,6 +40,23 @@ export default function getSchemaFromType(
     return {kind: SchemaKind.Literal, value: type.value};
   }
 
+  if (isEnumLiteralType(type)) {
+    const result: ValueType = {
+      kind: SchemaKind.Union,
+      elements: type.types.map(t => getSchemaFromType(t, parser)),
+    };
+    if (type.aliasSymbol) {
+      (result as any).enumDeclaration = type.aliasSymbol.name;
+    }
+    return result;
+  }
+  if (isUnionType(type)) {
+    return {
+      kind: SchemaKind.Union,
+      elements: type.types.map(t => getSchemaFromType(t, parser)),
+    };
+  }
+
   if (isIntersectionType(type) && type.types.length === 2) {
     const [a, b] = type.types;
     const brand = isEnumType(a) ? a : isEnumType(b) ? b : undefined;
@@ -58,24 +75,16 @@ export default function getSchemaFromType(
   }
 
   if (isEnumType(type)) {
-    // TODO
-    console.log(type);
-  }
-  if (isEnumLiteralType(type)) {
-    const result: ValueType = {
-      kind: SchemaKind.Union,
-      elements: type.types.map(t => getSchemaFromType(t, parser)),
-    };
-    if (type.aliasSymbol) {
-      (result as any).enumDeclaration = type.aliasSymbol.name;
+    const id = scalarIDFromBrand(type, parser);
+    if (id) {
+      const name = parser.scalarNames.get(id);
+      if (name) {
+        return {
+          kind: SchemaKind.Named,
+          name,
+        };
+      }
     }
-    return result;
-  }
-  if (isUnionType(type)) {
-    return {
-      kind: SchemaKind.Union,
-      elements: type.types.map(t => getSchemaFromType(t, parser)),
-    };
   }
 
   if (

@@ -4,10 +4,11 @@ import Context from '../Context';
 
 import Person from './Person';
 import Email, {validateEmail} from '../scalars/Email';
+import RichText from '../scalars/RichText';
 
 export class Root extends BaseObject<{}> {
   $auth = {
-    public: ['people', 'person', 'peopleByEmail'],
+    public: ['people', 'person', 'peopleByEmail', 'page'],
   };
   async people(args: void, context: Context): Promise<Person[]> {
     return [];
@@ -25,5 +26,8 @@ export class Root extends BaseObject<{}> {
       console.log(a);
     }
     return [];
+  }
+  page(): RichText {
+    return {} as RichText;
   }
 }
