@@ -1,5 +1,5 @@
 import {resolve} from 'path';
-import {readFileSync, writeFileSync} from 'fs';
+import * as fs from 'fs';
 import {lsrSync} from 'lsr';
 import {ParsedCommandLine} from 'typescript';
 import {sync as mkdirp} from 'mkdirp';
@@ -13,17 +13,35 @@ import {
   generateServer,
   generateClient,
 } from './compiler/code-gen';
+import formatResult from './formatResult';
 
-function writeIfChanged(filename: string, content: string) {
+function readFile(filename: string) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filename, 'utf8', (err, res) => {
+      if (err) reject(err);
+      else resolve(res);
+    });
+  });
+}
+function writeFile(filename: string, content: string) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filename, content, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+async function writeIfChanged(filename: string, content: string) {
+  const formatted = await formatResult(content, filename);
   try {
-    if (readFileSync(filename, 'utf8') !== content) {
-      writeFileSync(filename, content);
+    if (await readFile(filename) !== formatted) {
+      writeFile(filename, formatted);
     }
   } catch (ex) {
     if (ex.code !== 'ENOENT') {
       throw ex;
     }
-    writeFileSync(filename, content);
+    writeFile(filename, formatted);
   }
 }
 export default function compile(
@@ -40,19 +58,21 @@ export default function compile(
 
   const config = options.config || loadTsConfig(inputDirname);
   const ast = parse(filenames, config.options);
-  writeIfChanged(
-    outputDirname + '/scalar-types.ts',
-    generateScalars(ast, outputDirname + '/scalar-types.ts'),
-  );
-  writeIfChanged(
-    outputDirname + '/optimistic.ts',
-    generateOptimisticTypes(ast),
-  );
-  writeIfChanged(outputDirname + '/query-types.ts', generateQueryTypes(ast));
-  writeIfChanged(outputDirname + '/query.ts', generateQuery(ast));
-  writeIfChanged(
-    outputDirname + '/server.ts',
-    generateServer(ast, outputDirname + '/server.ts', options),
-  );
-  writeIfChanged(outputDirname + '/client.ts', generateClient(ast));
+  return Promise.all([
+    writeIfChanged(
+      outputDirname + '/scalar-types.ts',
+      generateScalars(ast, outputDirname + '/scalar-types.ts'),
+    ),
+    writeIfChanged(
+      outputDirname + '/optimistic.ts',
+      generateOptimisticTypes(ast),
+    ),
+    writeIfChanged(outputDirname + '/query-types.ts', generateQueryTypes(ast)),
+    writeIfChanged(outputDirname + '/query.ts', generateQuery(ast)),
+    writeIfChanged(
+      outputDirname + '/server.ts',
+      generateServer(ast, outputDirname + '/server.ts', options),
+    ),
+    writeIfChanged(outputDirname + '/client.ts', generateClient(ast)),
+  ]);
 }

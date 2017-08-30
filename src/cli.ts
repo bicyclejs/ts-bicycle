@@ -7,4 +7,7 @@ if (process.argv.length < 4) {
   process.exit(1);
 }
 
-compile(process.argv[2], process.argv[3]);
+compile(process.argv[2], process.argv[3]).catch(ex => {
+  console.error(ex.message || ex);
+  process.exit(1);
+});

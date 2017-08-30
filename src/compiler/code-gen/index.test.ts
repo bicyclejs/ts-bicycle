@@ -1,4 +1,3 @@
-import {readFileSync, writeFileSync} from 'fs';
 import {lsrSync} from 'lsr';
 import loadTsConfig from '../utils/loadTsConfig';
 import parse from '../parser';
@@ -12,18 +11,6 @@ import {
   generateClient,
 } from './';
 
-function writeIfChanged(filename: string, content: string) {
-  try {
-    if (readFileSync(filename, 'utf8') !== content) {
-      writeFileSync(filename, content);
-    }
-  } catch (ex) {
-    if (ex.code !== 'ENOENT') {
-      throw ex;
-    }
-    writeFileSync(filename, content);
-  }
-}
 let ast: AST | null = null;
 test('parse', () => {
   const filenames = lsrSync(__dirname + '/../../example')
@@ -42,7 +29,6 @@ function testFn(fn: (ast: AST, filename: string) => string, filename: string) {
     const outputFile = __dirname + '/../../example/' + filename + '.ts';
     const src = fn(ast, outputFile);
     expect(src).toMatchSnapshot();
-    writeIfChanged(outputFile, src);
   });
 }
 
