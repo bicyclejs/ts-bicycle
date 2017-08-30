@@ -49,7 +49,10 @@ export default function generateScalars(ast: AST, outputFileName: string) {
   const scalars = Object.keys(ast.scalars)
     .sort()
     .map(name => ast.scalars[name]);
-  const enums = Object.keys(ast.enums).sort().map(name => ast.enums[name]);
+  const enums = Object.keys(ast.enums)
+    .sort()
+    .filter(name => !(name in ast.scalars))
+    .map(name => ast.enums[name]);
   const result: string[] = [];
   result.push(generateHeader());
   const outputDirName = dirname(outputFileName);

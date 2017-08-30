@@ -5,10 +5,8 @@ import Email from './scalars/Email';
 import RichText from './scalars/RichText';
 import {EmailBrand} from './scalars/Email';
 import MyEnum from './scalars/MyEnum';
-import RichText from './scalars/RichText';
 
 export {Email};
 export {RichText};
 export {EmailBrand};
 export {MyEnum};
-export {RichText};

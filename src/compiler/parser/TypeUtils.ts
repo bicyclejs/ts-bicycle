@@ -68,5 +68,8 @@ const flagMapping: Array<[ts.TypeFlags, string]> = [
 ];
 
 export function typeFlagsToString(flags: ts.TypeFlags): string {
-  return flagMapping.filter(f => f[0] & flags).map(f => f[1]).join(', ');
+  return flagMapping
+    .filter(f => f[0] & flags)
+    .map(f => f[1])
+    .join(', ');
 }

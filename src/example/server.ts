@@ -162,7 +162,7 @@ const schema: Schema<_Context0> = {
           context: _Context0,
           subQuery: true | Query,
           qCtx: QueryContext<_Context0>,
-        ): {'foo'?: string} | PromiseLike<{'foo'?: string}> {
+        ): {foo?: string} | PromiseLike<{foo?: string}> {
           return value.objectWithOptionalProperty();
         },
       },
@@ -234,7 +234,7 @@ const schema: Schema<_Context0> = {
         } as any,
         auth: 'public',
         resolve(
-          args: {'field': string; 'value': string},
+          args: {field: string; value: string},
           context: _Context0,
           mCtx: MutationContext<_Context0>,
         ): void | PromiseLike<void> {

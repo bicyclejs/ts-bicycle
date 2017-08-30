@@ -35,7 +35,7 @@ export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
     );
   }
   get objectWithOptionalProperty(): PersonQuery<
-    TResult & {objectWithOptionalProperty: {'foo'?: string}}
+    TResult & {objectWithOptionalProperty: {foo?: string}}
   > {
     return new PersonQuery(
       addField(this._query, 'objectWithOptionalProperty', true),
@@ -54,12 +54,12 @@ export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
 
   // mutations
   set(
-    args: {'field': string; 'value': string},
+    args: {field: string; value: string},
     optimisticUpdate?: (
       mutation: {
         objectName: 'Person';
         methodName: 'set';
-        args: {'field': string; 'value': string};
+        args: {field: string; value: string};
       },
       cache: RootCache,
       getOptimisticValue: GetOptimisticValue,

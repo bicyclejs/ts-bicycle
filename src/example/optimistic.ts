@@ -11,7 +11,7 @@ export interface PersonOptimisticUpdaters {
     mutation: {
       objectName: 'Person';
       methodName: 'set';
-      args: {'field': string; 'value': string};
+      args: {field: string; value: string};
     },
     cache: RootCache,
     getOptimisticValue: GetOptimisticValue,
@@ -22,14 +22,14 @@ export interface PersonCache {
   get(name: 'name'): void | (null | string);
   get(name: 'friends'): void | PersonCache[];
   get(name: 'enemies'): void | PersonCache[];
-  get(name: 'objectWithOptionalProperty'): void | {'foo'?: string};
+  get(name: 'objectWithOptionalProperty'): void | {foo?: string};
   get(name: 'enumField'): void | ScalarTypes.MyEnum;
   get(name: 'anyField'): void | any;
   set(name: 'id', value: number): this;
   set(name: 'name', value: null | string): this;
   set(name: 'friends', value: PersonCache[]): this;
   set(name: 'enemies', value: PersonCache[]): this;
-  set(name: 'objectWithOptionalProperty', value: {'foo'?: string}): this;
+  set(name: 'objectWithOptionalProperty', value: {foo?: string}): this;
   set(name: 'enumField', value: ScalarTypes.MyEnum): this;
   set(name: 'anyField', value: any): this;
 }
