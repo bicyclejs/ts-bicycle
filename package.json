@@ -13,7 +13,7 @@
   "dependencies": {
     "@types/mkdirp": "^0.5.0",
     "@types/node": "^7.0.31",
-    "bicycle": "^3.1.1",
+    "bicycle": "^4.0.1",
     "lsr": "^2.0.0",
     "mkdirp": "^0.5.1",
     "prettier": "^1.6.0",

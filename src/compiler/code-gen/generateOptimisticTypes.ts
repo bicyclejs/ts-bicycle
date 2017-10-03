@@ -12,13 +12,9 @@ export default function generateOptimisticTypes(ast: AST): string {
 
   const imports = createImports(result, {
     ScalarTypes: {exportName: '*', filename: './scalar-types'},
-    BaseCache: {
-      exportName: 'BaseCache',
-      filename: 'bicycle/typed-helpers/optimistic',
-    },
     GetOptimisticValue: {
       exportName: 'GetOptimisticValue',
-      filename: 'bicycle/typed-helpers/optimistic',
+      filename: 'bicycle/client/optimistic',
     },
   });
   result.push(``);
