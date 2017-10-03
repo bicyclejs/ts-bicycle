@@ -74,20 +74,22 @@ export default function generateServer(
     );
   });
 
-  const ctx = context
-    .map((ref, i) => {
-      const source =
-        './' + relative(outputDirName, ref.fileName).replace(/\.tsx?$/, '');
-      if (ref.exportName === 'default') {
-        result.push(`import _Context${i} from '${source}';`);
-      } else {
-        result.push(
-          `import {${ref.exportName} as _Context${i}} from '${source}';`,
-        );
-      }
-      return `_Context${i}`;
-    })
-    .join(' | ');
+  const ctx = context.length
+    ? context
+        .map((ref, i) => {
+          const source =
+            './' + relative(outputDirName, ref.fileName).replace(/\.tsx?$/, '');
+          if (ref.exportName === 'default') {
+            result.push(`import _Context${i} from '${source}';`);
+          } else {
+            result.push(
+              `import {${ref.exportName} as _Context${i}} from '${source}';`,
+            );
+          }
+          return `_Context${i}`;
+        })
+        .join(' | ')
+    : '{}';
   result.push(``);
   if ('Root' in classes) {
     result.push(
