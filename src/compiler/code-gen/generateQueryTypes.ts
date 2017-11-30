@@ -167,7 +167,7 @@ export default function generateQueryTypes(ast: AST): string {
               name + '.' + mutationName,
             )}${
               args.length > 1 ? ', args' : ', undefined'
-            }, optimisticUpdate);`,
+            }, optimisticUpdate as any);`,
           );
           result.push(`  }`);
         });

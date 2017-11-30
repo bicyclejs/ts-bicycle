@@ -74,7 +74,7 @@ export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
       getOptimisticValue: GetOptimisticValue,
     ) => any,
   ): Mutation<void> {
-    return new Mutation('Person.set', args, optimisticUpdate);
+    return new Mutation('Person.set', args, optimisticUpdate as any);
   }
 }
 export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
