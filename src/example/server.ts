@@ -279,7 +279,7 @@ const schema: Schema<_Context0> = {
         argType: {kind: 'Void'} as any,
         auth: 'public',
         resolve(
-          value: _Context0,
+          value: {},
           args: void,
           context: _Context0,
           subQuery: true | Query,
@@ -302,7 +302,7 @@ const schema: Schema<_Context0> = {
         } as any,
         auth: 'public',
         resolve(
-          value: _Context0,
+          value: {},
           args: void,
           context: _Context0,
           subQuery: true | Query,
@@ -326,7 +326,7 @@ const schema: Schema<_Context0> = {
         } as any,
         auth: 'public',
         resolve(
-          value: _Context0,
+          value: {},
           args: ScalarTypes.Email,
           context: _Context0,
           subQuery: true | Query,
@@ -346,7 +346,7 @@ const schema: Schema<_Context0> = {
         } as any,
         auth: 'public',
         resolve(
-          value: _Context0,
+          value: {},
           args: number,
           context: _Context0,
           subQuery: true | Query,

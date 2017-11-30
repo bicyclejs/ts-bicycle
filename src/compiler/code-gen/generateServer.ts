@@ -144,7 +144,7 @@ export default function generateServer(
         generateAPI({
           selfValue: className === 'Root' ? 'root' : 'value',
           parameters: (argType: string) => [
-            `value: ${className === 'Root' ? ctx : className}`,
+            `value: ${className === 'Root' ? '{}' : className}`,
             `args: ${argType}`,
             `context: ${ctx}`,
             `subQuery: true | ${imports.get('Query')}`,

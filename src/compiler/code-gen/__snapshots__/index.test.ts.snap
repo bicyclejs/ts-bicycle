@@ -332,7 +332,7 @@ const schema: Schema<_Context0> = {
         resultType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"RichText\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":30}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
-        resolve(value: _Context0, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): ScalarTypes.RichText | PromiseLike<ScalarTypes.RichText> {
+        resolve(value: {}, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): ScalarTypes.RichText | PromiseLike<ScalarTypes.RichText> {
           return root.page();
         },
       },
@@ -343,7 +343,7 @@ const schema: Schema<_Context0> = {
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
         argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":13}} as any),
         auth: 'public',
-        resolve(value: _Context0, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
+        resolve(value: {}, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return root.people(args, context);
         },
       },
@@ -354,7 +354,7 @@ const schema: Schema<_Context0> = {
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
         argType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Email\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":19}} as any),
         auth: 'public',
-        resolve(value: _Context0, args: ScalarTypes.Email, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
+        resolve(value: {}, args: ScalarTypes.Email, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return root.peopleByEmail(args, context);
         },
       },
@@ -365,7 +365,7 @@ const schema: Schema<_Context0> = {
         resultType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"} as any),
         argType: ({\\"kind\\":\\"Number\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":16}} as any),
         auth: 'public',
-        resolve(value: _Context0, args: number, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person | PromiseLike<Person> {
+        resolve(value: {}, args: number, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person | PromiseLike<Person> {
           return root.person(args, context);
         },
       },
