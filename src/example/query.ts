@@ -6,6 +6,6 @@ import * as QueryTypes from './query-types';
 
 export {getType};
 
+export const Invite = new QueryTypes.InviteQuery<{}>({});
 export const Person = new QueryTypes.PersonQuery<{}>({});
 export const Root = new QueryTypes.RootQuery<{}>({});
-export const Invite = new QueryTypes.InviteQuery<{}>({});

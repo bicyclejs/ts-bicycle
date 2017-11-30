@@ -6,6 +6,8 @@ import * as ScalarTypes from './scalar-types';
 
 export {GetOptimisticValue};
 
+export interface InviteOptimisticUpdaters {}
+export interface InviteCache {}
 export interface PersonOptimisticUpdaters {
   set?: (
     mutation: {
@@ -47,13 +49,11 @@ export interface RootCache {
     value: PersonCache[],
   ): this;
   set(name: 'page', value: ScalarTypes.RichText): this;
-  getObject(typeName: 'Person', id: string): PersonCache;
   getObject(typeName: 'Invite', id: string): InviteCache;
+  getObject(typeName: 'Person', id: string): PersonCache;
 }
-export interface InviteOptimisticUpdaters {}
-export interface InviteCache {}
 export default interface OptimisticUpdaters {
+  Invite?: InviteOptimisticUpdaters;
   Person?: PersonOptimisticUpdaters;
   Root?: RootOptimisticUpdaters;
-  Invite?: InviteOptimisticUpdaters;
 };

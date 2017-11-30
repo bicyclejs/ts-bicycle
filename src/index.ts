@@ -25,7 +25,7 @@ function readFile(filename: string) {
 }
 function writeFile(filename: string, content: string) {
   return new Promise((resolve, reject) => {
-    fs.writeFile(filename, content, (err) => {
+    fs.writeFile(filename, content, err => {
       if (err) reject(err);
       else resolve();
     });
@@ -34,7 +34,7 @@ function writeFile(filename: string, content: string) {
 async function writeIfChanged(filename: string, content: string) {
   const formatted = await formatResult(content, filename);
   try {
-    if (await readFile(filename) !== formatted) {
+    if ((await readFile(filename)) !== formatted) {
       writeFile(filename, formatted);
     }
   } catch (ex) {

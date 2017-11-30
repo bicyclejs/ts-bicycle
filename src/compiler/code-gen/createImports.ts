@@ -34,9 +34,9 @@ export default function createImports<T extends Mapping>(
         const starImport = files[filename].filter(s => s.exportName === '*')[0];
         if (specifiers.length) {
           statements.push(
-            `import ${defaultImport
-              ? defaultImport.localName + ', '
-              : ''}{${specifiers
+            `import ${
+              defaultImport ? defaultImport.localName + ', ' : ''
+            }{${specifiers
               .filter(s => s.exportName)
               .map(s => {
                 if (s.exportName === s.localName) return s.localName;

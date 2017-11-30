@@ -220,7 +220,9 @@ export default function parseSchema(
       !node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword)
     ) {
       throw parser.createError(
-        `${className} is not exported, you must export any Bicycle Schema Objects`,
+        `${
+          className
+        } is not exported, you must export any Bicycle Schema Objects`,
         node.name,
       );
     }
@@ -279,8 +281,12 @@ export default function parseSchema(
       !(idName.name in instanceAPI.methods)
     ) {
       throw parser.createError(
-        `Could not find a property called "${idName.name}" in ${className}. Either define an ` +
-          `id property called "${idName.name}" that returns a unique string for each object, ` +
+        `Could not find a property called "${idName.name}" in ${
+          className
+        }. Either define an ` +
+          `id property called "${
+            idName.name
+          }" that returns a unique string for each object, ` +
           `or set the "idName" property to a property name that exists for your object.`,
         idName.loc,
       );
@@ -364,22 +370,24 @@ export default function parseSchema(
               const propertyName = element.text;
               if (auth[propertyName]) {
                 throw parser.createError(
-                  `"${propertyName} is in $auth categories of "${auth[
-                    propertyName
-                  ]}" and ` +
-                    `"${groupName}". We can't tell whether you expected us to require users ` +
+                  `"${propertyName} is in $auth categories of "${
+                    auth[propertyName]
+                  }" and ` +
+                    `"${
+                      groupName
+                    }". We can't tell whether you expected us to require users ` +
                     `to match "${auth[propertyName]} && ${groupName}" or ` +
-                    `"${auth[
-                      propertyName
-                    ]} || ${groupName}". You need to be explicit. ` +
+                    `"${auth[propertyName]} || ${
+                      groupName
+                    }". You need to be explicit. ` +
                     `You could set up a new group like: \n\n` +
-                    `async $${auth[
-                      propertyName
-                    ]}And${groupName[0].toUpperCase() +
+                    `async $${
+                      auth[propertyName]
+                    }And${groupName[0].toUpperCase() +
                       groupName.substr(1)}(args: any, ctx: Context) {\n` +
-                    `  return (await this.$${auth[
-                      propertyName
-                    ]}(args, ctx)) && (await this.$${groupName}(args, ctx));\n` +
+                    `  return (await this.$${
+                      auth[propertyName]
+                    }(args, ctx)) && (await this.$${groupName}(args, ctx));\n` +
                     `}`,
                   element,
                 );

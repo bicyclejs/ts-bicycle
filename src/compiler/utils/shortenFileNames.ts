@@ -1,8 +1,8 @@
 import normalizeSlashes from './normalizeSlashes';
 
-export default function shortenFileNames(obj: any): any {
+export default function shortenFileNames<T>(obj: T): T {
   if (Array.isArray(obj)) {
-    return obj.map(shortenFileNames);
+    return obj.map(shortenFileNames) as any;
   }
   if (obj && typeof obj === 'object') {
     const result = {};
@@ -13,7 +13,7 @@ export default function shortenFileNames(obj: any): any {
         result[key] = shortenFileNames(obj[key]);
       }
     });
-    return result;
+    return result as any;
   }
   return obj;
 }

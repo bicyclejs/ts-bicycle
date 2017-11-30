@@ -13,13 +13,15 @@ export default function generateQuery(ast: AST): string {
   result.push(``);
   result.push(`export {${imports.get('getType')}};`);
   result.push(``);
-  Object.keys(classes).forEach(name => {
-    result.push(
-      `export const ${name} = new ${imports.get(
-        'QueryTypes',
-      )}.${name}Query<{}>({});`,
-    );
-  });
+  Object.keys(classes)
+    .sort()
+    .forEach(name => {
+      result.push(
+        `export const ${name} = new ${imports.get('QueryTypes')}.${
+          name
+        }Query<{}>({});`,
+      );
+    });
   result.push(``);
 
   imports.finish();

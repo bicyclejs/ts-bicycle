@@ -8,9 +8,9 @@ import Query from 'bicycle/types/Query';
 import * as ScalarTypes from './scalar-types';
 import MutationContext from 'bicycle/types/MutationContext';
 import BicycleServer, {Options} from 'bicycle/server-core';
+import Invite from './objects/Other';
 import Person from './objects/Person';
 import {Root} from './objects/Root';
-import Invite from './objects/Other';
 import {validateEmail} from './scalars/Email';
 import {validate as validateRichText} from './scalars/RichText';
 import _Context0 from './Context';
@@ -18,6 +18,19 @@ import _Context0 from './Context';
 // root never has any actual data, so we create one reusable instance
 const root = new Root({});
 const schema: Schema<_Context0> = {
+  Invite: {
+    kind: SchemaKind.NodeType,
+    name: 'Invite',
+    description: undefined,
+    id(obj: Invite, ctx: _Context0, qCtx: QueryContext<_Context0>): string {
+      return '' + obj.data.id;
+    },
+    matches(obj: any): obj is Invite {
+      return obj instanceof Invite;
+    },
+    fields: {},
+    mutations: {},
+  },
   Person: {
     kind: SchemaKind.NodeType,
     name: 'Person',
@@ -70,35 +83,24 @@ const schema: Schema<_Context0> = {
           return value.data.name;
         },
       },
-      friends: {
+      anyField: {
         kind: SchemaKind.FieldMethod,
-        name: 'friends',
+        name: 'anyField',
         description: undefined,
         resultType: {
-          kind: 'List',
-          element: {kind: 'Named', name: 'Person'},
+          kind: 'Any',
+          loc: {fileName: '/src/example/objects/Person.ts', line: 50},
         } as any,
-        argType: {
-          kind: 'Void',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 32},
-        } as any,
-        auth(
-          value: Person,
-          args: void,
-          context: _Context0,
-          subQuery: true | Query,
-          qCtx: QueryContext<_Context0>,
-        ): boolean | PromiseLike<boolean> {
-          return value.$isSelf(args, context);
-        },
+        argType: {kind: 'Void'} as any,
+        auth: 'public',
         resolve(
           value: Person,
           args: void,
           context: _Context0,
           subQuery: true | Query,
           qCtx: QueryContext<_Context0>,
-        ): Person[] | PromiseLike<Person[]> {
-          return value.friends(args, context);
+        ): any | PromiseLike<any> {
+          return value.anyField();
         },
       },
       enemies: {
@@ -130,6 +132,62 @@ const schema: Schema<_Context0> = {
           qCtx: QueryContext<_Context0>,
         ): Person[] | PromiseLike<Person[]> {
           return value.enemies(args, context);
+        },
+      },
+      enumField: {
+        kind: SchemaKind.FieldMethod,
+        name: 'enumField',
+        description: undefined,
+        resultType: {
+          kind: 'Union',
+          elements: [
+            {kind: 'Literal', value: 10},
+            {kind: 'Literal', value: 20},
+          ],
+          enumDeclaration: 'MyEnum',
+          loc: {fileName: '/src/example/objects/Person.ts', line: 46},
+        } as any,
+        argType: {kind: 'Void'} as any,
+        auth: 'public',
+        resolve(
+          value: Person,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): ScalarTypes.MyEnum | PromiseLike<ScalarTypes.MyEnum> {
+          return value.enumField();
+        },
+      },
+      friends: {
+        kind: SchemaKind.FieldMethod,
+        name: 'friends',
+        description: undefined,
+        resultType: {
+          kind: 'List',
+          element: {kind: 'Named', name: 'Person'},
+        } as any,
+        argType: {
+          kind: 'Void',
+          loc: {fileName: '/src/example/objects/Person.ts', line: 32},
+        } as any,
+        auth(
+          value: Person,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): boolean | PromiseLike<boolean> {
+          return value.$isSelf(args, context);
+        },
+        resolve(
+          value: Person,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): Person[] | PromiseLike<Person[]> {
+          return value.friends(args, context);
         },
       },
       objectWithOptionalProperty: {
@@ -164,51 +222,6 @@ const schema: Schema<_Context0> = {
           qCtx: QueryContext<_Context0>,
         ): {foo?: string} | PromiseLike<{foo?: string}> {
           return value.objectWithOptionalProperty();
-        },
-      },
-      enumField: {
-        kind: SchemaKind.FieldMethod,
-        name: 'enumField',
-        description: undefined,
-        resultType: {
-          kind: 'Union',
-          elements: [
-            {kind: 'Literal', value: 10},
-            {kind: 'Literal', value: 20},
-          ],
-          enumDeclaration: 'MyEnum',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 46},
-        } as any,
-        argType: {kind: 'Void'} as any,
-        auth: 'public',
-        resolve(
-          value: Person,
-          args: void,
-          context: _Context0,
-          subQuery: true | Query,
-          qCtx: QueryContext<_Context0>,
-        ): ScalarTypes.MyEnum | PromiseLike<ScalarTypes.MyEnum> {
-          return value.enumField();
-        },
-      },
-      anyField: {
-        kind: SchemaKind.FieldMethod,
-        name: 'anyField',
-        description: undefined,
-        resultType: {
-          kind: 'Any',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 50},
-        } as any,
-        argType: {kind: 'Void'} as any,
-        auth: 'public',
-        resolve(
-          value: Person,
-          args: void,
-          context: _Context0,
-          subQuery: true | Query,
-          qCtx: QueryContext<_Context0>,
-        ): any | PromiseLike<any> {
-          return value.anyField();
         },
       },
     },
@@ -254,6 +267,27 @@ const schema: Schema<_Context0> = {
       return obj instanceof Root;
     },
     fields: {
+      page: {
+        kind: SchemaKind.FieldMethod,
+        name: 'page',
+        description: undefined,
+        resultType: {
+          kind: 'Named',
+          name: 'RichText',
+          loc: {fileName: '/src/example/objects/Root.ts', line: 30},
+        } as any,
+        argType: {kind: 'Void'} as any,
+        auth: 'public',
+        resolve(
+          value: _Context0,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): ScalarTypes.RichText | PromiseLike<ScalarTypes.RichText> {
+          return root.page();
+        },
+      },
       people: {
         kind: SchemaKind.FieldMethod,
         name: 'people',
@@ -275,26 +309,6 @@ const schema: Schema<_Context0> = {
           qCtx: QueryContext<_Context0>,
         ): Person[] | PromiseLike<Person[]> {
           return root.people(args, context);
-        },
-      },
-      person: {
-        kind: SchemaKind.FieldMethod,
-        name: 'person',
-        description: undefined,
-        resultType: {kind: 'Named', name: 'Person'} as any,
-        argType: {
-          kind: 'Number',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 16},
-        } as any,
-        auth: 'public',
-        resolve(
-          value: _Context0,
-          args: number,
-          context: _Context0,
-          subQuery: true | Query,
-          qCtx: QueryContext<_Context0>,
-        ): Person | PromiseLike<Person> {
-          return root.person(args, context);
         },
       },
       peopleByEmail: {
@@ -321,41 +335,27 @@ const schema: Schema<_Context0> = {
           return root.peopleByEmail(args, context);
         },
       },
-      page: {
+      person: {
         kind: SchemaKind.FieldMethod,
-        name: 'page',
+        name: 'person',
         description: undefined,
-        resultType: {
-          kind: 'Named',
-          name: 'RichText',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 30},
+        resultType: {kind: 'Named', name: 'Person'} as any,
+        argType: {
+          kind: 'Number',
+          loc: {fileName: '/src/example/objects/Root.ts', line: 16},
         } as any,
-        argType: {kind: 'Void'} as any,
         auth: 'public',
         resolve(
           value: _Context0,
-          args: void,
+          args: number,
           context: _Context0,
           subQuery: true | Query,
           qCtx: QueryContext<_Context0>,
-        ): ScalarTypes.RichText | PromiseLike<ScalarTypes.RichText> {
-          return root.page();
+        ): Person | PromiseLike<Person> {
+          return root.person(args, context);
         },
       },
     },
-    mutations: {},
-  },
-  Invite: {
-    kind: SchemaKind.NodeType,
-    name: 'Invite',
-    description: undefined,
-    id(obj: Invite, ctx: _Context0, qCtx: QueryContext<_Context0>): string {
-      return '' + obj.data.id;
-    },
-    matches(obj: any): obj is Invite {
-      return obj instanceof Invite;
-    },
-    fields: {},
     mutations: {},
   },
   Email: {
@@ -364,11 +364,7 @@ const schema: Schema<_Context0> = {
     description: undefined,
     baseType: {
       kind: 'String',
-      loc: {
-        fileName:
-          '/Users/forbeslindesay/GitHub/ts-bicycle/src/example/scalars/Email.ts',
-        line: 7,
-      },
+      loc: {fileName: '/src/example/scalars/Email.ts', line: 7},
     } as any,
     validate: validateEmail,
   },

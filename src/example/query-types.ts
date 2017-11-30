@@ -3,8 +3,8 @@
 
 import {
   BaseQuery,
-  addField,
   merge,
+  addField,
   Mutation,
   BaseRootQuery,
   stringify,
@@ -12,6 +12,15 @@ import {
 import * as ScalarTypes from './scalar-types';
 import {RootCache, GetOptimisticValue} from './optimistic';
 
+export class InviteQuery<TResult = {}> extends BaseQuery<TResult> {
+  // fields
+
+  merge<TOther>(other: InviteQuery<TOther>): InviteQuery<TResult & TOther> {
+    return new InviteQuery(merge(this._query, other._query));
+  }
+
+  // mutations
+}
 export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
   // fields
   get id(): PersonQuery<TResult & {id: number}> {
@@ -109,15 +118,6 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
 
   merge<TOther>(other: RootQuery<TOther>): RootQuery<TResult & TOther> {
     return new RootQuery(merge(this._query, other._query));
-  }
-
-  // mutations
-}
-export class InviteQuery<TResult = {}> extends BaseQuery<TResult> {
-  // fields
-
-  merge<TOther>(other: InviteQuery<TOther>): InviteQuery<TResult & TOther> {
-    return new InviteQuery(merge(this._query, other._query));
   }
 
   // mutations

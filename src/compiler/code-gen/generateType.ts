@@ -24,6 +24,7 @@ export default function generateType(
       return (
         '{' +
         Object.keys(t.properties)
+          .sort()
           .map(name => {
             const type = t.properties[name];
             const isOptional = (t.properties[name] as any).isOptional;
