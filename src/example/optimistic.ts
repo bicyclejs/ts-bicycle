@@ -41,6 +41,8 @@ export interface RootCache {
   get(name: 'person', args: number): void | PersonCache;
   get(name: 'peopleByEmail', args: ScalarTypes.Email): void | PersonCache[];
   get(name: 'page'): void | ScalarTypes.RichText;
+  get(name: 'nullOrBooleanPromise'): void | (null | true | false);
+  get(name: 'someSpecificString'): void | ('Hello' | 'World');
   set(name: 'people', value: PersonCache[]): this;
   set(name: 'person', args: number, value: PersonCache): this;
   set(
@@ -49,6 +51,8 @@ export interface RootCache {
     value: PersonCache[],
   ): this;
   set(name: 'page', value: ScalarTypes.RichText): this;
+  set(name: 'nullOrBooleanPromise', value: null | true | false): this;
+  set(name: 'someSpecificString', value: 'Hello' | 'World'): this;
   getObject(typeName: 'Invite', id: string): InviteCache;
   getObject(typeName: 'Person', id: string): PersonCache;
 }

@@ -272,13 +272,45 @@ Object {
       "idName": "id",
       "instanceAPI": Object {
         "auth": Object {
+          "nullOrBooleanPromise": "public",
           "page": "public",
           "people": "public",
           "peopleByEmail": "public",
           "person": "public",
+          "someSpecificString": "public",
         },
         "authMethods": Object {},
         "methods": Object {
+          "nullOrBooleanPromise": Object {
+            "args": Object {
+              "kind": "Void",
+            },
+            "length": 0,
+            "name": "nullOrBooleanPromise",
+            "result": Object {
+              "kind": "Promise",
+              "loc": Object {
+                "fileName": "/src/example/objects/Root.ts",
+                "line": 40,
+              },
+              "result": Object {
+                "elements": Array [
+                  Object {
+                    "kind": "Null",
+                  },
+                  Object {
+                    "kind": "Literal",
+                    "value": true,
+                  },
+                  Object {
+                    "kind": "Literal",
+                    "value": false,
+                  },
+                ],
+                "kind": "Union",
+              },
+            },
+          },
           "page": Object {
             "args": Object {
               "kind": "Void",
@@ -289,7 +321,7 @@ Object {
               "kind": "Named",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 30,
+                "line": 37,
               },
               "name": "RichText",
             },
@@ -299,7 +331,7 @@ Object {
               "kind": "Void",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 13,
+                "line": 20,
               },
             },
             "length": 2,
@@ -308,7 +340,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 13,
+                "line": 20,
               },
               "result": Object {
                 "element": Object {
@@ -324,7 +356,7 @@ Object {
               "kind": "Named",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 19,
+                "line": 26,
               },
               "name": "Email",
             },
@@ -334,7 +366,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 19,
+                "line": 26,
               },
               "result": Object {
                 "element": Object {
@@ -350,7 +382,7 @@ Object {
               "kind": "Number",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 16,
+                "line": 23,
               },
             },
             "length": 2,
@@ -359,11 +391,35 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 16,
+                "line": 23,
               },
               "result": Object {
                 "kind": "Named",
                 "name": "Person",
+              },
+            },
+          },
+          "someSpecificString": Object {
+            "args": Object {
+              "kind": "Void",
+            },
+            "length": 0,
+            "name": "someSpecificString",
+            "result": Object {
+              "elements": Array [
+                Object {
+                  "kind": "Literal",
+                  "value": "Hello",
+                },
+                Object {
+                  "kind": "Literal",
+                  "value": "World",
+                },
+              ],
+              "kind": "Union",
+              "loc": Object {
+                "fileName": "/src/example/objects/Root.ts",
+                "line": 43,
               },
             },
           },

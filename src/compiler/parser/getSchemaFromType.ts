@@ -7,6 +7,7 @@ import {
   isEnumType,
   isEnumLiteralType,
   isLiteralType,
+  isBooleanLiteralType,
   isIntersectionType,
   isUnionType,
   isTypeReference,
@@ -38,6 +39,9 @@ export default function getSchemaFromType(
 
   if (isLiteralType(type)) {
     return {kind: SchemaKind.Literal, value: type.value};
+  }
+  if (isBooleanLiteralType(type)) {
+    return {kind: SchemaKind.Literal, value: type.intrinsicName === 'true'};
   }
 
   if (isEnumLiteralType(type)) {

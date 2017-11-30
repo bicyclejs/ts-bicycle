@@ -115,6 +115,16 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
   get page(): RootQuery<TResult & {page: ScalarTypes.RichText}> {
     return new RootQuery(addField(this._query, 'page', true));
   }
+  get nullOrBooleanPromise(): RootQuery<
+    TResult & {nullOrBooleanPromise: null | true | false}
+  > {
+    return new RootQuery(addField(this._query, 'nullOrBooleanPromise', true));
+  }
+  get someSpecificString(): RootQuery<
+    TResult & {someSpecificString: 'Hello' | 'World'}
+  > {
+    return new RootQuery(addField(this._query, 'someSpecificString', true));
+  }
 
   merge<TOther>(other: RootQuery<TOther>): RootQuery<TResult & TOther> {
     return new RootQuery(merge(this._query, other._query));

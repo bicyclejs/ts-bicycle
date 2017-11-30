@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 
 export interface BooleanLiteralType extends ts.Type {
-  value: boolean;
+  intrinsicName: 'true' | 'false';
 }
 
 export function isIntersectionType(type: ts.Type): type is ts.IntersectionType {
@@ -12,8 +12,13 @@ export function isUnionType(type: ts.Type): type is ts.UnionType {
 }
 export function isLiteralType(
   type: ts.Type,
-): type is ts.StringLiteralType | ts.NumberLiteralType | BooleanLiteralType {
-  return !!(type.flags & ts.TypeFlags.Literal);
+): type is ts.StringLiteralType | ts.NumberLiteralType {
+  return !isBooleanLiteralType(type) && !!(type.flags & ts.TypeFlags.Literal);
+}
+export function isBooleanLiteralType(
+  type: ts.Type,
+): type is BooleanLiteralType {
+  return !!(type.flags & ts.TypeFlags.BooleanLiteral);
 }
 export function isEnumType(type: ts.Type): type is ts.EnumType {
   return !!(type.flags & ts.TypeFlags.Enum);

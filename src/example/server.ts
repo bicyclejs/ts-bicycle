@@ -267,6 +267,30 @@ const schema: Schema<_Context0> = {
       return obj instanceof Root;
     },
     fields: {
+      nullOrBooleanPromise: {
+        kind: SchemaKind.FieldMethod,
+        name: 'nullOrBooleanPromise',
+        description: undefined,
+        resultType: {
+          kind: 'Union',
+          elements: [
+            {kind: 'Null'},
+            {kind: 'Literal', value: true},
+            {kind: 'Literal', value: false},
+          ],
+        } as any,
+        argType: {kind: 'Void'} as any,
+        auth: 'public',
+        resolve(
+          value: {},
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): (null | true | false) | PromiseLike<null | true | false> {
+          return root.nullOrBooleanPromise();
+        },
+      },
       page: {
         kind: SchemaKind.FieldMethod,
         name: 'page',
@@ -274,7 +298,7 @@ const schema: Schema<_Context0> = {
         resultType: {
           kind: 'Named',
           name: 'RichText',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 30},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 37},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -298,7 +322,7 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {
           kind: 'Void',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 13},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 20},
         } as any,
         auth: 'public',
         resolve(
@@ -322,7 +346,7 @@ const schema: Schema<_Context0> = {
         argType: {
           kind: 'Named',
           name: 'Email',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 19},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 26},
         } as any,
         auth: 'public',
         resolve(
@@ -342,7 +366,7 @@ const schema: Schema<_Context0> = {
         resultType: {kind: 'Named', name: 'Person'} as any,
         argType: {
           kind: 'Number',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 16},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 23},
         } as any,
         auth: 'public',
         resolve(
@@ -353,6 +377,30 @@ const schema: Schema<_Context0> = {
           qCtx: QueryContext<_Context0>,
         ): Person | PromiseLike<Person> {
           return root.person(args, context);
+        },
+      },
+      someSpecificString: {
+        kind: SchemaKind.FieldMethod,
+        name: 'someSpecificString',
+        description: undefined,
+        resultType: {
+          kind: 'Union',
+          elements: [
+            {kind: 'Literal', value: 'Hello'},
+            {kind: 'Literal', value: 'World'},
+          ],
+          loc: {fileName: '/src/example/objects/Root.ts', line: 43},
+        } as any,
+        argType: {kind: 'Void'} as any,
+        auth: 'public',
+        resolve(
+          value: {},
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ): ('Hello' | 'World') | PromiseLike<'Hello' | 'World'> {
+          return root.someSpecificString();
         },
       },
     },

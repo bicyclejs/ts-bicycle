@@ -8,7 +8,14 @@ import RichText from '../scalars/RichText';
 
 export class Root extends BaseObject<{}> {
   $auth = {
-    public: ['people', 'person', 'peopleByEmail', 'page'],
+    public: [
+      'people',
+      'person',
+      'peopleByEmail',
+      'page',
+      'nullOrBooleanPromise',
+      'someSpecificString',
+    ],
   };
   async people(args: void, context: Context): Promise<Person[]> {
     return [];
@@ -29,5 +36,11 @@ export class Root extends BaseObject<{}> {
   }
   page(): RichText {
     return {} as RichText;
+  }
+  async nullOrBooleanPromise(): Promise<boolean | null> {
+    return false;
+  }
+  someSpecificString(): 'Hello' | 'World' {
+    return 'Hello';
   }
 }
