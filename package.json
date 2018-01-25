@@ -1,6 +1,6 @@
 {
   "name": "ts-bicycle",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Type safe version of bicycle",
   "main": "lib/index.js",
   "types": "./lib/index.d.ts",
