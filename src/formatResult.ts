@@ -9,7 +9,7 @@ export default async function formatResult(
   // run prettier until it stabalises
   // workaround for https://github.com/prettier/prettier/issues/3823
   let formatted = '';
-  let next = '';
+  let next = src;
   let i = 0;
   do {
     formatted = next;
