@@ -13,7 +13,7 @@ export default async function formatResult(
   let i = 0;
   do {
     formatted = next;
-    next = prettier.format(src, options);
+    next = prettier.format(formatted, options);
     i++;
   } while (formatted !== next && i < 20);
   return formatted;
