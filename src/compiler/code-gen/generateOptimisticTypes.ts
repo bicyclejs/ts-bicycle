@@ -31,9 +31,7 @@ export default function generateOptimisticTypes(ast: AST): string {
         .forEach(mutationName => {
           const t = type.staticAPI.methods[mutationName];
           result.push(
-            `  ${mutationName}?: (mutation: {objectName: '${
-              name
-            }'; methodName: '${mutationName}'; args: ${generateType(
+            `  ${mutationName}?: (mutation: {objectName: '${name}'; methodName: '${mutationName}'; args: ${generateType(
               t.args,
               name => imports.get('ScalarTypes') + '.' + name,
             )}}, cache: RootCache, getOptimisticValue: ${imports.get(
@@ -95,9 +93,7 @@ export default function generateOptimisticTypes(ast: AST): string {
               return;
             }
             result.push(
-              `  getObject(typeName: '${typeName}', id: string): ${
-                typeName
-              }Cache;`,
+              `  getObject(typeName: '${typeName}', id: string): ${typeName}Cache;`,
             );
           });
       }

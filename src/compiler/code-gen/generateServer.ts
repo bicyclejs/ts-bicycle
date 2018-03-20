@@ -194,9 +194,9 @@ export default function generateServer(
   result.push(`};`);
   result.push(`export {${imports.get('Options')}};`);
   result.push(
-    `export default class Server extends ${imports.get('BicycleServer')}<${
-      ctx
-    }> {`,
+    `export default class Server extends ${imports.get(
+      'BicycleServer',
+    )}<${ctx}> {`,
   );
   result.push(`  constructor(options?: ${imports.get('Options')}) {`);
   result.push(`    super(schema, options);`);
@@ -304,9 +304,9 @@ function generateAPI({
       }
       const returnType = getType(method.result);
       result.push(
-        `        resolve(${parameters(argType).join(', ')}): ${
-          returnType
-        } | PromiseLike<${returnType}> {`,
+        `        resolve(${parameters(argType).join(
+          ', ',
+        )}): ${returnType} | PromiseLike<${returnType}> {`,
       );
       result.push(`          return ${makeCall(selfValue, method, args)};`);
       result.push(`        },`);

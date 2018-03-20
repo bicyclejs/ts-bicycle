@@ -35,16 +35,16 @@ async function writeIfChanged(filename: string, content: string) {
   const formatted = await formatResult(content, filename);
   try {
     if ((await readFile(filename)) !== formatted) {
-      writeFile(filename, formatted);
+      await writeFile(filename, formatted);
     }
   } catch (ex) {
     if (ex.code !== 'ENOENT') {
       throw ex;
     }
-    writeFile(filename, formatted);
+    await writeFile(filename, formatted);
   }
 }
-export default function compile(
+export default async function compile(
   inputDirname: string,
   outputDirname: string,
   options: {config?: ParsedCommandLine; shortenFileNames?: boolean} = {},
@@ -58,7 +58,7 @@ export default function compile(
 
   const config = options.config || loadTsConfig(inputDirname);
   const ast = parse(filenames, config.options);
-  return Promise.all([
+  await Promise.all([
     writeIfChanged(
       outputDirname + '/scalar-types.ts',
       generateScalars(ast, outputDirname + '/scalar-types.ts'),
@@ -75,4 +75,5 @@ export default function compile(
     ),
     writeIfChanged(outputDirname + '/client.ts', generateClient(ast)),
   ]);
+  return ast.programFiles;
 }

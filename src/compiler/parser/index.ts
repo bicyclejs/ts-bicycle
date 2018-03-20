@@ -1,3 +1,4 @@
+import {realpathSync} from 'fs';
 import * as ts from 'typescript';
 import getObjectDataTypeNode from './getObjectDataTypeNode';
 import getSchemaFromType from './getSchemaFromType';
@@ -13,7 +14,13 @@ export default function parseSchema(
   fileNames: string[],
   options: ts.CompilerOptions,
 ): AST {
-  const result: AST = {classes: {}, context: [], scalars: {}, enums: {}};
+  const result: AST = {
+    programFiles: [],
+    classes: {},
+    context: [],
+    scalars: {},
+    enums: {},
+  };
   const parser = new Parser(fileNames, options);
 
   const scalarInfoByAlias = new Map<ScalarName, ScalarInfo>();
@@ -21,8 +28,9 @@ export default function parseSchema(
   // Visit every sourceFile in the program
   const fileNamesSet = new Set(fileNames.map(n => n.toLowerCase()));
   for (const sourceFile of parser.program.getSourceFiles()) {
+    result.programFiles.push(realpathSync(sourceFile.fileName));
     if (fileNamesSet.has(sourceFile.fileName.toLowerCase())) {
-      // Walk the tree to search for classes
+      // Walk the tree to search for scalars and enums
       ts.forEachChild(sourceFile, visitScalarsAndEnums);
     }
   }
@@ -32,6 +40,7 @@ export default function parseSchema(
       ts.forEachChild(sourceFile, visitClasses);
     }
   }
+  result.programFiles.sort();
   return result;
 
   /** visit nodes finding exported classes */
@@ -220,9 +229,7 @@ export default function parseSchema(
       !node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword)
     ) {
       throw parser.createError(
-        `${
-          className
-        } is not exported, you must export any Bicycle Schema Objects`,
+        `${className} is not exported, you must export any Bicycle Schema Objects`,
         node.name,
       );
     }
@@ -281,9 +288,9 @@ export default function parseSchema(
       !(idName.name in instanceAPI.methods)
     ) {
       throw parser.createError(
-        `Could not find a property called "${idName.name}" in ${
-          className
-        }. Either define an ` +
+        `Could not find a property called "${
+          idName.name
+        }" in ${className}. Either define an ` +
           `id property called "${
             idName.name
           }" that returns a unique string for each object, ` +
@@ -373,13 +380,11 @@ export default function parseSchema(
                   `"${propertyName} is in $auth categories of "${
                     auth[propertyName]
                   }" and ` +
-                    `"${
-                      groupName
-                    }". We can't tell whether you expected us to require users ` +
+                    `"${groupName}". We can't tell whether you expected us to require users ` +
                     `to match "${auth[propertyName]} && ${groupName}" or ` +
-                    `"${auth[propertyName]} || ${
-                      groupName
-                    }". You need to be explicit. ` +
+                    `"${
+                      auth[propertyName]
+                    } || ${groupName}". You need to be explicit. ` +
                     `You could set up a new group like: \n\n` +
                     `async $${
                       auth[propertyName]

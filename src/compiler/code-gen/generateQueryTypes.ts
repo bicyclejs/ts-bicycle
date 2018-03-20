@@ -92,13 +92,13 @@ export default function generateQueryTypes(ast: AST): string {
         const genericsString = generics.length
           ? `<${generics.join(', ')}>`
           : '';
-        const returnTypeString = `${name}Query<TResult & {${propertyName}: ${
-          resultTypeString
-        }}>`;
+        const returnTypeString = `${name}Query<TResult & {${propertyName}: ${resultTypeString}}>`;
         result.push(
-          `  ${args.length === 0 ? 'get ' : ''}${propertyName}${
-            genericsString
-          }(${args.join(', ')}): ${returnTypeString} {`,
+          `  ${
+            args.length === 0 ? 'get ' : ''
+          }${propertyName}${genericsString}(${args.join(
+            ', ',
+          )}): ${returnTypeString} {`,
         );
 
         const key = argsType
@@ -117,9 +117,7 @@ export default function generateQueryTypes(ast: AST): string {
       });
       result.push(``);
       result.push(
-        `  merge<TOther>(other: ${name}Query<TOther>): ${
-          name
-        }Query<TResult & TOther> {`,
+        `  merge<TOther>(other: ${name}Query<TOther>): ${name}Query<TResult & TOther> {`,
       );
       result.push(
         `    return new ${name}Query(${imports.get(
@@ -143,9 +141,7 @@ export default function generateQueryTypes(ast: AST): string {
                   )}`,
                 ];
           args.push(
-            `optimisticUpdate?: (mutation: {objectName: '${
-              name
-            }'; methodName: '${mutationName}'; args: ${generateType(
+            `optimisticUpdate?: (mutation: {objectName: '${name}'; methodName: '${mutationName}'; args: ${generateType(
               t.args,
               name => imports.get('ScalarTypes') + '.' + name,
             )}}, cache: ${imports.get(

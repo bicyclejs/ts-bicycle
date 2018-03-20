@@ -11,6 +11,7 @@ export interface Scalar {
   validatorLocation: LocationInfo;
 }
 export default interface AST {
+  programFiles: string[];
   classes: {[className: string]: ParsedObject};
   context: {exportName: string; fileName: string}[];
   scalars: {[scalarName: string]: Scalar};

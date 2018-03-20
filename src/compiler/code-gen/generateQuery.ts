@@ -17,9 +17,9 @@ export default function generateQuery(ast: AST): string {
     .sort()
     .forEach(name => {
       result.push(
-        `export const ${name} = new ${imports.get('QueryTypes')}.${
-          name
-        }Query<{}>({});`,
+        `export const ${name} = new ${imports.get(
+          'QueryTypes',
+        )}.${name}Query<{}>({});`,
       );
     });
   result.push(``);
