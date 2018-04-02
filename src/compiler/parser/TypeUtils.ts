@@ -66,7 +66,6 @@ const flagMapping: Array<[ts.TypeFlags, string]> = [
   [ts.TypeFlags.EnumLike, 'EnumLike'],
   [ts.TypeFlags.UnionOrIntersection, 'UnionOrIntersection'],
   [ts.TypeFlags.StructuredType, 'StructuredType'],
-  [ts.TypeFlags.StructuredOrTypeVariable, 'StructuredOrTypeVariable'],
   [ts.TypeFlags.TypeVariable, 'TypeVariable'],
   [ts.TypeFlags.Narrowable, 'Narrowable'],
   [ts.TypeFlags.NotUnionOrUnit, 'NotUnionOrUnit'],
