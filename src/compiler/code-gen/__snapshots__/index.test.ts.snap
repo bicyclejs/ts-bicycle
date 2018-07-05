@@ -35,6 +35,7 @@ export interface PersonCache {
   get(name: \\"enemies\\"): void | PersonCache[];
   get(name: \\"objectWithOptionalProperty\\"): void | {\\"foo\\"?: string};
   get(name: \\"enumField\\"): void | ScalarTypes.MyEnum;
+  get(name: \\"enumSubsetField\\"): void | (ScalarTypes.MyEnum.a | ScalarTypes.MyEnum.b);
   get(name: \\"anyField\\"): void | any;
   set(name: \\"id\\", value: number): this;
   set(name: \\"name\\", value: (null | string)): this;
@@ -42,6 +43,7 @@ export interface PersonCache {
   set(name: \\"enemies\\", value: PersonCache[]): this;
   set(name: \\"objectWithOptionalProperty\\", value: {\\"foo\\"?: string}): this;
   set(name: \\"enumField\\", value: ScalarTypes.MyEnum): this;
+  set(name: \\"enumSubsetField\\", value: (ScalarTypes.MyEnum.a | ScalarTypes.MyEnum.b)): this;
   set(name: \\"anyField\\", value: any): this;
 }
 export interface RootOptimisticUpdaters {
@@ -122,6 +124,9 @@ export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
   }
   get enumField(): PersonQuery<TResult & {enumField: ScalarTypes.MyEnum}> {
     return new PersonQuery(addField(this._query, \\"enumField\\", true));
+  }
+  get enumSubsetField(): PersonQuery<TResult & {enumSubsetField: (ScalarTypes.MyEnum.a | ScalarTypes.MyEnum.b)}> {
+    return new PersonQuery(addField(this._query, \\"enumSubsetField\\", true));
   }
   get anyField(): PersonQuery<TResult & {anyField: any}> {
     return new PersonQuery(addField(this._query, \\"anyField\\", true));
@@ -262,7 +267,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"anyField\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Any\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":50}} as any),
+        resultType: ({\\"kind\\":\\"Any\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":54}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): any | PromiseLike<any> {
@@ -274,7 +279,7 @@ const schema: Schema<_Context0> = {
         name: \\"enemies\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":37}} as any),
+        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":38}} as any),
         auth(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
           return value.$isSelf(args, context);
         },
@@ -286,11 +291,22 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"enumField\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Literal\\",\\"value\\":10},{\\"kind\\":\\"Literal\\",\\"value\\":20}],\\"enumDeclaration\\":\\"MyEnum\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":46}} as any),
+        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Literal\\",\\"value\\":10,\\"enumDeclaration\\":\\"MyEnum.a\\"},{\\"kind\\":\\"Literal\\",\\"value\\":20,\\"enumDeclaration\\":\\"MyEnum.b\\"},{\\"kind\\":\\"Literal\\",\\"value\\":30,\\"enumDeclaration\\":\\"MyEnum.c\\"}],\\"enumDeclaration\\":\\"MyEnum\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":47}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): ScalarTypes.MyEnum | PromiseLike<ScalarTypes.MyEnum> {
           return value.enumField();
+        },
+      },
+      enumSubsetField: {
+        kind: SchemaKind.FieldMethod,
+        name: \\"enumSubsetField\\",
+        description: undefined,
+        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Literal\\",\\"value\\":10,\\"enumDeclaration\\":\\"MyEnum.a\\"},{\\"kind\\":\\"Literal\\",\\"value\\":20,\\"enumDeclaration\\":\\"MyEnum.b\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":50}} as any),
+        argType: ({\\"kind\\":\\"Void\\"} as any),
+        auth: 'public',
+        resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): (ScalarTypes.MyEnum.a | ScalarTypes.MyEnum.b) | PromiseLike<(ScalarTypes.MyEnum.a | ScalarTypes.MyEnum.b)> {
+          return value.enumSubsetField();
         },
       },
       friends: {
@@ -298,7 +314,7 @@ const schema: Schema<_Context0> = {
         name: \\"friends\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":32}} as any),
+        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":33}} as any),
         auth(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): boolean | PromiseLike<boolean> {
           return value.$isSelf(args, context);
         },
@@ -310,7 +326,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"objectWithOptionalProperty\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"foo\\":{\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":43}},{\\"kind\\":\\"Void\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":43},\\"isOptional\\":true}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":43}} as any),
+        resultType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"foo\\":{\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":44}},{\\"kind\\":\\"Void\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":44},\\"isOptional\\":true}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":44}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
         resolve(value: Person, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): {\\"foo\\"?: string} | PromiseLike<{\\"foo\\"?: string}> {
@@ -324,7 +340,7 @@ const schema: Schema<_Context0> = {
         name: \\"set\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"Void\\"} as any),
-        argType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"field\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":58}},\\"value\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":58}}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":58}} as any),
+        argType: ({\\"kind\\":\\"Object\\",\\"properties\\":{\\"field\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":62}},\\"value\\":{\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":62}}},\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Person.ts\\",\\"line\\":62}} as any),
         auth: 'public',
         resolve(args: {\\"field\\": string, \\"value\\": string}, context: _Context0, mCtx: MutationContext<_Context0>): void | PromiseLike<void> {
           return Person.set(args, context);

@@ -21,6 +21,7 @@ export default class Person extends Object<PersonData> {
       'name',
       'objectWithOptionalProperty',
       'enumField',
+      'enumSubsetField',
       'anyField',
     ],
     isSelf: ['friends', 'enemies'],
@@ -44,6 +45,9 @@ export default class Person extends Object<PersonData> {
     return {};
   }
   enumField(): MyEnum {
+    return MyEnum.a;
+  }
+  enumSubsetField(): MyEnum.a | MyEnum.b {
     return MyEnum.a;
   }
 

@@ -38,6 +38,7 @@ Object {
           "anyField": "public",
           "enemies": "isSelf",
           "enumField": "public",
+          "enumSubsetField": "public",
           "friends": "isSelf",
           "id": "public",
           "name": "public",
@@ -58,7 +59,7 @@ Object {
               "kind": "Union",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 28,
+                "line": 29,
               },
             },
             "length": 2,
@@ -67,7 +68,7 @@ Object {
               "kind": "Boolean",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 28,
+                "line": 29,
               },
             },
           },
@@ -83,7 +84,7 @@ Object {
               "kind": "Any",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 50,
+                "line": 54,
               },
             },
           },
@@ -92,7 +93,7 @@ Object {
               "kind": "Void",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 37,
+                "line": 38,
               },
             },
             "length": 2,
@@ -101,7 +102,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 37,
+                "line": 38,
               },
               "result": Object {
                 "element": Object {
@@ -121,19 +122,52 @@ Object {
             "result": Object {
               "elements": Array [
                 Object {
+                  "enumDeclaration": "MyEnum.a",
                   "kind": "Literal",
                   "value": 10,
                 },
                 Object {
+                  "enumDeclaration": "MyEnum.b",
                   "kind": "Literal",
                   "value": 20,
+                },
+                Object {
+                  "enumDeclaration": "MyEnum.c",
+                  "kind": "Literal",
+                  "value": 30,
                 },
               ],
               "enumDeclaration": "MyEnum",
               "kind": "Union",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 46,
+                "line": 47,
+              },
+            },
+          },
+          "enumSubsetField": Object {
+            "args": Object {
+              "kind": "Void",
+            },
+            "length": 0,
+            "name": "enumSubsetField",
+            "result": Object {
+              "elements": Array [
+                Object {
+                  "enumDeclaration": "MyEnum.a",
+                  "kind": "Literal",
+                  "value": 10,
+                },
+                Object {
+                  "enumDeclaration": "MyEnum.b",
+                  "kind": "Literal",
+                  "value": 20,
+                },
+              ],
+              "kind": "Union",
+              "loc": Object {
+                "fileName": "/src/example/objects/Person.ts",
+                "line": 50,
               },
             },
           },
@@ -142,7 +176,7 @@ Object {
               "kind": "Void",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 32,
+                "line": 33,
               },
             },
             "length": 2,
@@ -151,7 +185,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 32,
+                "line": 33,
               },
               "result": Object {
                 "element": Object {
@@ -172,7 +206,7 @@ Object {
               "kind": "Object",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 43,
+                "line": 44,
               },
               "properties": Object {
                 "foo": Object {
@@ -181,7 +215,7 @@ Object {
                       "kind": "String",
                       "loc": Object {
                         "fileName": "/src/example/objects/Person.ts",
-                        "line": 43,
+                        "line": 44,
                       },
                     },
                     Object {
@@ -192,7 +226,7 @@ Object {
                   "kind": "Union",
                   "loc": Object {
                     "fileName": "/src/example/objects/Person.ts",
-                    "line": 43,
+                    "line": 44,
                   },
                 },
               },
@@ -239,21 +273,21 @@ Object {
               "kind": "Object",
               "loc": Object {
                 "fileName": "/src/example/objects/Person.ts",
-                "line": 58,
+                "line": 62,
               },
               "properties": Object {
                 "field": Object {
                   "kind": "String",
                   "loc": Object {
                     "fileName": "/src/example/objects/Person.ts",
-                    "line": 58,
+                    "line": 62,
                   },
                 },
                 "value": Object {
                   "kind": "String",
                   "loc": Object {
                     "fileName": "/src/example/objects/Person.ts",
-                    "line": 58,
+                    "line": 62,
                   },
                 },
               },

@@ -68,7 +68,19 @@ export default function getSchemaFromType(
   }
 
   if (isLiteralType(type)) {
-    return {kind: SchemaKind.Literal, value: type.value};
+    const result: ValueType = {kind: SchemaKind.Literal, value: type.value};
+    if (
+      type.symbol &&
+      (type.symbol.flags & ts.SymbolFlags.EnumMember) ===
+        ts.SymbolFlags.EnumMember
+    ) {
+      const enumMemberName = type.symbol.name;
+      const parent: ts.Symbol | undefined = (type.symbol as any).parent;
+      if (parent) {
+        (result as any).enumDeclaration = parent.name + '.' + enumMemberName;
+      }
+    }
+    return result;
   }
   if (isBooleanLiteralType(type)) {
     return {kind: SchemaKind.Literal, value: type.intrinsicName === 'true'};
@@ -204,7 +216,6 @@ export default function getSchemaFromType(
 
 function getAliasSymbols(type: ts.Type, parser: Parser) {
   const symbol = type.getSymbol();
-  // console.log('type: ' + (symbol && symbol.escapedName));
   if (symbol && symbol.declarations && symbol.declarations.length) {
     return (type.aliasSymbol ? [type.aliasSymbol] : []).concat(
       parser.checker

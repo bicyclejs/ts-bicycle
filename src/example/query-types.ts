@@ -53,6 +53,11 @@ export class PersonQuery<TResult = {}> extends BaseQuery<TResult> {
   get enumField(): PersonQuery<TResult & {enumField: ScalarTypes.MyEnum}> {
     return new PersonQuery(addField(this._query, 'enumField', true));
   }
+  get enumSubsetField(): PersonQuery<
+    TResult & {enumSubsetField: ScalarTypes.MyEnum.a | ScalarTypes.MyEnum.b}
+  > {
+    return new PersonQuery(addField(this._query, 'enumSubsetField', true));
+  }
   get anyField(): PersonQuery<TResult & {anyField: any}> {
     return new PersonQuery(addField(this._query, 'anyField', true));
   }

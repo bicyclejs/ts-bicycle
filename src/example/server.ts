@@ -90,7 +90,7 @@ const schema: Schema<_Context0> = {
         description: undefined,
         resultType: {
           kind: 'Any',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 50},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 54},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -114,7 +114,7 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {
           kind: 'Void',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 37},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 38},
         } as any,
         auth(
           value: Person,
@@ -142,11 +142,12 @@ const schema: Schema<_Context0> = {
         resultType: {
           kind: 'Union',
           elements: [
-            {kind: 'Literal', value: 10},
-            {kind: 'Literal', value: 20},
+            {kind: 'Literal', value: 10, enumDeclaration: 'MyEnum.a'},
+            {kind: 'Literal', value: 20, enumDeclaration: 'MyEnum.b'},
+            {kind: 'Literal', value: 30, enumDeclaration: 'MyEnum.c'},
           ],
           enumDeclaration: 'MyEnum',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 46},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 47},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -160,6 +161,32 @@ const schema: Schema<_Context0> = {
           return value.enumField();
         },
       },
+      enumSubsetField: {
+        kind: SchemaKind.FieldMethod,
+        name: 'enumSubsetField',
+        description: undefined,
+        resultType: {
+          kind: 'Union',
+          elements: [
+            {kind: 'Literal', value: 10, enumDeclaration: 'MyEnum.a'},
+            {kind: 'Literal', value: 20, enumDeclaration: 'MyEnum.b'},
+          ],
+          loc: {fileName: '/src/example/objects/Person.ts', line: 50},
+        } as any,
+        argType: {kind: 'Void'} as any,
+        auth: 'public',
+        resolve(
+          value: Person,
+          args: void,
+          context: _Context0,
+          subQuery: true | Query,
+          qCtx: QueryContext<_Context0>,
+        ):
+          | (ScalarTypes.MyEnum.a | ScalarTypes.MyEnum.b)
+          | PromiseLike<ScalarTypes.MyEnum.a | ScalarTypes.MyEnum.b> {
+          return value.enumSubsetField();
+        },
+      },
       friends: {
         kind: SchemaKind.FieldMethod,
         name: 'friends',
@@ -170,7 +197,7 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {
           kind: 'Void',
-          loc: {fileName: '/src/example/objects/Person.ts', line: 32},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 33},
         } as any,
         auth(
           value: Person,
@@ -203,15 +230,15 @@ const schema: Schema<_Context0> = {
               elements: [
                 {
                   kind: 'String',
-                  loc: {fileName: '/src/example/objects/Person.ts', line: 43},
+                  loc: {fileName: '/src/example/objects/Person.ts', line: 44},
                 },
                 {kind: 'Void'},
               ],
-              loc: {fileName: '/src/example/objects/Person.ts', line: 43},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 44},
               isOptional: true,
             },
           },
-          loc: {fileName: '/src/example/objects/Person.ts', line: 43},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 44},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -237,14 +264,14 @@ const schema: Schema<_Context0> = {
           properties: {
             field: {
               kind: 'String',
-              loc: {fileName: '/src/example/objects/Person.ts', line: 58},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 62},
             },
             value: {
               kind: 'String',
-              loc: {fileName: '/src/example/objects/Person.ts', line: 58},
+              loc: {fileName: '/src/example/objects/Person.ts', line: 62},
             },
           },
-          loc: {fileName: '/src/example/objects/Person.ts', line: 58},
+          loc: {fileName: '/src/example/objects/Person.ts', line: 62},
         } as any,
         auth: 'public',
         resolve(

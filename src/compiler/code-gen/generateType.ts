@@ -5,6 +5,17 @@ export default function generateType(
   t: ValueType,
   onNamedType: (name: string) => string,
 ): string {
+  if ((t as any).enumDeclaration) {
+    const declaration: string = (t as any).enumDeclaration;
+    return (
+      onNamedType(declaration.split('.')[0]) +
+      declaration
+        .split('.')
+        .slice(1)
+        .map(v => '.' + v)
+        .join('')
+    );
+  }
   switch (t.kind) {
     case SchemaKind.Boolean:
       return 'boolean';
@@ -48,9 +59,6 @@ export default function generateType(
     case SchemaKind.String:
       return 'string';
     case SchemaKind.Union:
-      if ((t as any).enumDeclaration) {
-        return onNamedType((t as any).enumDeclaration);
-      }
       return (
         '(' +
         t.elements.map(t => generateType(t, onNamedType)).join(' | ') +
