@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import ValueType, {LocationInfo} from 'bicycle/types/ValueType';
-import {ScalarID, ScalarName} from './Scalars';
+import {ScalarID, ScalarName, ModernScalarInfo} from './Scalars';
 
 function isLocationInfo(node: any): node is LocationInfo {
   return typeof node.fileName === 'string' && typeof node.line === 'number';
@@ -13,6 +13,39 @@ export default class Parser {
     ScalarID,
     ScalarName
   >();
+  public readonly modernScalars: Map<ScalarID, ModernScalarInfo> = new Map<
+    ScalarID,
+    ModernScalarInfo
+  >();
+  public readonly usedScalarNames: Map<ScalarName, ScalarID> = new Map<
+    ScalarName,
+    ScalarID
+  >();
+  getScalarName(id: ScalarID, defaultName: string): ScalarName {
+    const cached = this.scalarNames.get(id);
+    if (cached) {
+      return cached;
+    }
+    let i = 1;
+    let name = ScalarName.unsafeCast(defaultName);
+    while (this.usedScalarNames.has(name)) {
+      i++;
+      name = ScalarName.unsafeCast(defaultName + i);
+    }
+    this.scalarNames.set(id, name);
+    this.usedScalarNames.set(name, id);
+    return name;
+  }
+  renameScalar(id: ScalarID, name: string) {
+    let newName = ScalarName.unsafeCast(name);
+    const oldName = this.scalarNames.get(id);
+    if (oldName === newName) {
+      return newName;
+    }
+    this.scalarNames.delete(id);
+    newName = this.getScalarName(id, name);
+    return newName;
+  }
   public readonly fileNames = new Map<string, string>();
   constructor(fileNames: string[], options: ts.CompilerOptions) {
     fileNames.forEach(name => {

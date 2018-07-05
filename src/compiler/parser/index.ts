@@ -41,6 +41,17 @@ export default function parseSchema(
     }
   }
   result.programFiles.sort();
+  parser.modernScalars.forEach(scalar => {
+    result.scalars[scalar.name] = {
+      type: scalar.baseType,
+      brandName: scalar.name,
+      name: scalar.name,
+      exportName: scalar.exportName,
+      aliasLocation: scalar.loc,
+      validatorName: scalar.exportName + '.isValid',
+      validatorLocation: scalar.loc,
+    };
+  });
   return result;
 
   /** visit nodes finding exported classes */
@@ -116,8 +127,7 @@ export default function parseSchema(
   function visitTypeAliasDeclaration(node: ts.TypeAliasDeclaration) {
     const scalar = getScalarInfo(node.type, node.name);
     if (scalar) {
-      const scalarName = ScalarName.unsafeCast(node.name.text);
-      parser.scalarNames.set(scalarID(scalar), scalarName);
+      const scalarName = parser.renameScalar(scalarID(scalar), node.name.text);
       scalarInfoByAlias.set(scalarName, scalar);
       const isExported =
         node.modifiers &&
@@ -151,10 +161,12 @@ export default function parseSchema(
     };
     const scalar = getScalarInfo(node, node.name);
     if (scalar && !parser.scalarNames.has(scalarID(scalar))) {
-      const scalarName = scalar.brandName as ScalarName;
-      parser.scalarNames.set(scalarID(scalar), scalarName);
+      const scalarName = parser.renameScalar(
+        scalarID(scalar),
+        scalar.brandName,
+      );
       scalarInfoByAlias.set(scalarName, scalar);
-      if (isExported) {
+      if (isExported && !scalarExportName.has(scalarName)) {
         scalarExportName.set(
           scalarName,
           isDefaultExport ? 'default' : scalarName,

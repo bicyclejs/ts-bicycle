@@ -3,14 +3,19 @@ import AST, {Scalar} from '../AST';
 import generateHeader from './generateHeader';
 
 export function getValidationFunctionName(scalar: Scalar) {
-  return 'validate' + scalar.name;
+  return scalar.validatorName.indexOf('.') !== -1
+    ? scalar.name + 'Validator.isValid'
+    : 'validate' + scalar.name;
 }
 export function getScalarValidateFunctionImportStatement(
   scalar: Scalar,
   outputDirName: string,
 ) {
-  const exportedName = scalar.validatorName;
-  const validateName = getValidationFunctionName(scalar);
+  const exportedName = scalar.validatorName.split('.')[0];
+  const validateName =
+    scalar.validatorName.indexOf('.') !== -1
+      ? scalar.name + 'Validator'
+      : 'validate' + scalar.name;
   const specifier =
     exportedName === 'default'
       ? validateName

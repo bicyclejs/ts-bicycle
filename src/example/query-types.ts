@@ -98,6 +98,20 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
       ),
     );
   }
+  peopleByEmail2<TPerson>(
+    args: ScalarTypes.Email2,
+    Person: PersonQuery<TPerson>,
+  ): RootQuery<TResult & {peopleByEmail2: TPerson[]}> {
+    return new RootQuery(
+      addField(
+        this._query,
+        args === undefined
+          ? 'peopleByEmail2'
+          : 'peopleByEmail2(' + stringify(args) + ')',
+        (Person as any)._query,
+      ),
+    );
+  }
   peopleByEmail<TPerson>(
     args: ScalarTypes.Email,
     Person: PersonQuery<TPerson>,

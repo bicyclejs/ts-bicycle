@@ -19,4 +19,4 @@ export default interface ParsedObject {
   idName: string;
   instanceAPI: ResolvedAPI;
   staticAPI: ResolvedAPI;
-};
+}

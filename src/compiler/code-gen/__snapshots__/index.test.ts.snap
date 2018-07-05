@@ -49,12 +49,14 @@ export interface RootOptimisticUpdaters {
 export interface RootCache {
   get(name: \\"people\\"): void | PersonCache[];
   get(name: \\"person\\", args: number): void | PersonCache;
+  get(name: \\"peopleByEmail2\\", args: ScalarTypes.Email2): void | PersonCache[];
   get(name: \\"peopleByEmail\\", args: ScalarTypes.Email): void | PersonCache[];
   get(name: \\"page\\"): void | ScalarTypes.RichText;
   get(name: \\"nullOrBooleanPromise\\"): void | (null | true | false);
   get(name: \\"someSpecificString\\"): void | (\\"Hello\\" | \\"World\\");
   set(name: \\"people\\", value: PersonCache[]): this;
   set(name: \\"person\\", args: number, value: PersonCache): this;
+  set(name: \\"peopleByEmail2\\", args: ScalarTypes.Email2, value: PersonCache[]): this;
   set(name: \\"peopleByEmail\\", args: ScalarTypes.Email, value: PersonCache[]): this;
   set(name: \\"page\\", value: ScalarTypes.RichText): this;
   set(name: \\"nullOrBooleanPromise\\", value: (null | true | false)): this;
@@ -142,6 +144,9 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
   person<TPerson>(args: number, Person: PersonQuery<TPerson>): RootQuery<TResult & {person: TPerson}> {
     return new RootQuery(addField(this._query, args === undefined ? \\"person\\" : \\"person(\\" + stringify(args) + ')', (Person as any)._query));
   }
+  peopleByEmail2<TPerson>(args: ScalarTypes.Email2, Person: PersonQuery<TPerson>): RootQuery<TResult & {peopleByEmail2: TPerson[]}> {
+    return new RootQuery(addField(this._query, args === undefined ? \\"peopleByEmail2\\" : \\"peopleByEmail2(\\" + stringify(args) + ')', (Person as any)._query));
+  }
   peopleByEmail<TPerson>(args: ScalarTypes.Email, Person: PersonQuery<TPerson>): RootQuery<TResult & {peopleByEmail: TPerson[]}> {
     return new RootQuery(addField(this._query, args === undefined ? \\"peopleByEmail\\" : \\"peopleByEmail(\\" + stringify(args) + ')', (Person as any)._query));
   }
@@ -168,11 +173,13 @@ exports[`compile scalar-types 1`] = `
 // do not edit by hand
 
 import Email from './scalars/Email';
+import Email2 from './scalars/Email2';
 import RichText from './scalars/RichText';
 import {EmailBrand} from './scalars/Email'
 import MyEnum from './scalars/MyEnum'
 
 export {Email};
+export {Email2};
 export {RichText};
 export {EmailBrand};
 export {MyEnum};
@@ -194,6 +201,7 @@ import Invite from './objects/Other';
 import Person from './objects/Person';
 import {Root} from './objects/Root';
 import {validateEmail} from './scalars/Email';
+import Email2Validator from './scalars/Email2';
 import {validate as validateRichText} from './scalars/RichText';
 import _Context0 from './Context';
 
@@ -350,7 +358,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"page\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"RichText\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":37}} as any),
+        resultType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"RichText\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":50}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
         resolve(value: {}, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): ScalarTypes.RichText | PromiseLike<ScalarTypes.RichText> {
@@ -362,7 +370,7 @@ const schema: Schema<_Context0> = {
         name: \\"people\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":20}} as any),
+        argType: ({\\"kind\\":\\"Void\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":22}} as any),
         auth: 'public',
         resolve(value: {}, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return root.people(args, context);
@@ -373,10 +381,21 @@ const schema: Schema<_Context0> = {
         name: \\"peopleByEmail\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
-        argType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Email\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":26}} as any),
+        argType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Email\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":39}} as any),
         auth: 'public',
         resolve(value: {}, args: ScalarTypes.Email, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
           return root.peopleByEmail(args, context);
+        },
+      },
+      peopleByEmail2: {
+        kind: SchemaKind.FieldMethod,
+        name: \\"peopleByEmail2\\",
+        description: undefined,
+        resultType: ({\\"kind\\":\\"List\\",\\"element\\":{\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"}} as any),
+        argType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Email2\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":28}} as any),
+        auth: 'public',
+        resolve(value: {}, args: ScalarTypes.Email2, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person[] | PromiseLike<Person[]> {
+          return root.peopleByEmail2(args, context);
         },
       },
       person: {
@@ -384,7 +403,7 @@ const schema: Schema<_Context0> = {
         name: \\"person\\",
         description: undefined,
         resultType: ({\\"kind\\":\\"Named\\",\\"name\\":\\"Person\\"} as any),
-        argType: ({\\"kind\\":\\"Number\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":23}} as any),
+        argType: ({\\"kind\\":\\"Number\\",\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":25}} as any),
         auth: 'public',
         resolve(value: {}, args: number, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): Person | PromiseLike<Person> {
           return root.person(args, context);
@@ -394,7 +413,7 @@ const schema: Schema<_Context0> = {
         kind: SchemaKind.FieldMethod,
         name: \\"someSpecificString\\",
         description: undefined,
-        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Literal\\",\\"value\\":\\"Hello\\"},{\\"kind\\":\\"Literal\\",\\"value\\":\\"World\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":43}} as any),
+        resultType: ({\\"kind\\":\\"Union\\",\\"elements\\":[{\\"kind\\":\\"Literal\\",\\"value\\":\\"Hello\\"},{\\"kind\\":\\"Literal\\",\\"value\\":\\"World\\"}],\\"loc\\":{\\"fileName\\":\\"/src/example/objects/Root.ts\\",\\"line\\":56}} as any),
         argType: ({\\"kind\\":\\"Void\\"} as any),
         auth: 'public',
         resolve(value: {}, args: void, context: _Context0, subQuery: true | Query, qCtx: QueryContext<_Context0>): (\\"Hello\\" | \\"World\\") | PromiseLike<(\\"Hello\\" | \\"World\\")> {
@@ -412,6 +431,13 @@ const schema: Schema<_Context0> = {
     description: undefined,
     baseType: ({\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/scalars/Email.ts\\",\\"line\\":7}} as any),
     validate: validateEmail,
+  },
+  Email2: {
+    kind: SchemaKind.Scalar,
+    name: \\"Email2\\",
+    description: undefined,
+    baseType: ({\\"kind\\":\\"String\\",\\"loc\\":{\\"fileName\\":\\"/src/example/scalars/Email2.ts\\",\\"line\\":5}} as any),
+    validate: Email2Validator.isValid,
   },
   RichText: {
     kind: SchemaKind.Scalar,

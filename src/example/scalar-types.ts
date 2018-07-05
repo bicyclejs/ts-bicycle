@@ -2,11 +2,13 @@
 // do not edit by hand
 
 import Email from './scalars/Email';
+import Email2 from './scalars/Email2';
 import RichText from './scalars/RichText';
 import {EmailBrand} from './scalars/Email';
 import MyEnum from './scalars/MyEnum';
 
 export {Email};
+export {Email2};
 export {RichText};
 export {EmailBrand};
 export {MyEnum};

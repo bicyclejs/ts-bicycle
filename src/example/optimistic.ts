@@ -39,12 +39,18 @@ export interface RootOptimisticUpdaters {}
 export interface RootCache {
   get(name: 'people'): void | PersonCache[];
   get(name: 'person', args: number): void | PersonCache;
+  get(name: 'peopleByEmail2', args: ScalarTypes.Email2): void | PersonCache[];
   get(name: 'peopleByEmail', args: ScalarTypes.Email): void | PersonCache[];
   get(name: 'page'): void | ScalarTypes.RichText;
   get(name: 'nullOrBooleanPromise'): void | (null | true | false);
   get(name: 'someSpecificString'): void | ('Hello' | 'World');
   set(name: 'people', value: PersonCache[]): this;
   set(name: 'person', args: number, value: PersonCache): this;
+  set(
+    name: 'peopleByEmail2',
+    args: ScalarTypes.Email2,
+    value: PersonCache[],
+  ): this;
   set(
     name: 'peopleByEmail',
     args: ScalarTypes.Email,
@@ -60,4 +66,4 @@ export default interface OptimisticUpdaters {
   Invite?: InviteOptimisticUpdaters;
   Person?: PersonOptimisticUpdaters;
   Root?: RootOptimisticUpdaters;
-};
+}

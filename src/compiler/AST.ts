@@ -22,4 +22,4 @@ export default interface AST {
       location: LocationInfo;
     };
   };
-};
+}

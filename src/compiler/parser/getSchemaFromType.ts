@@ -14,13 +14,37 @@ import {
   isObjectType,
 } from './TypeUtils';
 import {isObjectDataType} from './getObjectDataTypeNode';
-import {scalarIDFromBrand} from './Scalars';
+import {scalarIDFromBrand, scalarIDFromSymbol} from './Scalars';
 
 // TODO: track and prevent infinite recursion
 export default function getSchemaFromType(
   type: ts.Type,
   parser: Parser,
 ): ValueType {
+  if (type.aliasSymbol && type.aliasSymbol.declarations) {
+    const opaqueDeclarations = type.aliasSymbol.declarations.filter(d =>
+      ts
+        .getJSDocTags(d)
+        .some(t => t.tagName.text === 'opaque' || t.tagName.text === 'nominal'),
+    );
+    if (opaqueDeclarations.length === 1) {
+      const id = scalarIDFromSymbol(
+        type.aliasSymbol,
+        opaqueDeclarations[0],
+        parser,
+      );
+      if (id) {
+        const name = parser.scalarNames.get(id);
+        if (name) {
+          return {
+            kind: SchemaKind.Named,
+            name,
+          };
+        }
+      }
+    }
+  }
+
   if (type.flags & ts.TypeFlags.Boolean) {
     return {kind: SchemaKind.Boolean};
   }

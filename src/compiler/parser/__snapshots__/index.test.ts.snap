@@ -276,6 +276,7 @@ Object {
           "page": "public",
           "people": "public",
           "peopleByEmail": "public",
+          "peopleByEmail2": "public",
           "person": "public",
           "someSpecificString": "public",
         },
@@ -291,7 +292,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 40,
+                "line": 53,
               },
               "result": Object {
                 "elements": Array [
@@ -321,7 +322,7 @@ Object {
               "kind": "Named",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 37,
+                "line": 50,
               },
               "name": "RichText",
             },
@@ -331,7 +332,7 @@ Object {
               "kind": "Void",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 20,
+                "line": 22,
               },
             },
             "length": 2,
@@ -340,7 +341,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 20,
+                "line": 22,
               },
               "result": Object {
                 "element": Object {
@@ -356,7 +357,7 @@ Object {
               "kind": "Named",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 26,
+                "line": 39,
               },
               "name": "Email",
             },
@@ -366,7 +367,33 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 26,
+                "line": 39,
+              },
+              "result": Object {
+                "element": Object {
+                  "kind": "Named",
+                  "name": "Person",
+                },
+                "kind": "List",
+              },
+            },
+          },
+          "peopleByEmail2": Object {
+            "args": Object {
+              "kind": "Named",
+              "loc": Object {
+                "fileName": "/src/example/objects/Root.ts",
+                "line": 28,
+              },
+              "name": "Email2",
+            },
+            "length": 2,
+            "name": "peopleByEmail2",
+            "result": Object {
+              "kind": "Promise",
+              "loc": Object {
+                "fileName": "/src/example/objects/Root.ts",
+                "line": 28,
               },
               "result": Object {
                 "element": Object {
@@ -382,7 +409,7 @@ Object {
               "kind": "Number",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 23,
+                "line": 25,
               },
             },
             "length": 2,
@@ -391,7 +418,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 23,
+                "line": 25,
               },
               "result": Object {
                 "kind": "Named",
@@ -419,7 +446,7 @@ Object {
               "kind": "Union",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 43,
+                "line": 56,
               },
             },
           },
@@ -428,7 +455,7 @@ Object {
       },
       "loc": Object {
         "fileName": "/src/example/objects/Root.ts",
-        "line": 8,
+        "line": 9,
       },
       "staticAPI": Object {
         "auth": Object {},
@@ -472,6 +499,8 @@ Object {
   "programFiles": Array [
     "/node_modules/@types/body-parser/index.d.ts",
     "/node_modules/@types/concat-stream/index.d.ts",
+    "/node_modules/@types/connect/index.d.ts",
+    "/node_modules/@types/cuid/index.d.ts",
     "/node_modules/@types/deep-freeze/index.d.ts",
     "/node_modules/@types/events/index.d.ts",
     "/node_modules/@types/express-serve-static-core/index.d.ts",
@@ -484,6 +513,7 @@ Object {
     "/node_modules/@types/ms/index.d.ts",
     "/node_modules/@types/node/index.d.ts",
     "/node_modules/@types/qs/index.d.ts",
+    "/node_modules/@types/range-parser/index.d.ts",
     "/node_modules/@types/react-dom/index.d.ts",
     "/node_modules/@types/react/global.d.ts",
     "/node_modules/@types/react/index.d.ts",
@@ -491,8 +521,10 @@ Object {
     "/node_modules/bicycle/BaseObject.d.ts",
     "/node_modules/bicycle/CacheUpdateType.d.ts",
     "/node_modules/bicycle/Ctx.d.ts",
+    "/node_modules/bicycle/client/OptimisticValue.d.ts",
     "/node_modules/bicycle/client/OptimisticValueStore.d.ts",
     "/node_modules/bicycle/client/index.d.ts",
+    "/node_modules/bicycle/client/mutation.d.ts",
     "/node_modules/bicycle/client/optimistic.d.ts",
     "/node_modules/bicycle/network-layer.d.ts",
     "/node_modules/bicycle/server-core.d.ts",
@@ -501,23 +533,25 @@ Object {
     "/node_modules/bicycle/typed-helpers/client.d.ts",
     "/node_modules/bicycle/typed-helpers/query.d.ts",
     "/node_modules/bicycle/types/Cache.d.ts",
-    "/node_modules/bicycle/types/ClientRequest.d.ts",
-    "/node_modules/bicycle/types/DeleteField.d.ts",
     "/node_modules/bicycle/types/ErrorResult.d.ts",
     "/node_modules/bicycle/types/Logging.d.ts",
     "/node_modules/bicycle/types/MutationContext.d.ts",
+    "/node_modules/bicycle/types/MutationID.d.ts",
     "/node_modules/bicycle/types/MutationResult.d.ts",
     "/node_modules/bicycle/types/NetworkLayerInterface.d.ts",
     "/node_modules/bicycle/types/NodeID.d.ts",
     "/node_modules/bicycle/types/Query.d.ts",
     "/node_modules/bicycle/types/QueryContext.d.ts",
+    "/node_modules/bicycle/types/Request.d.ts",
     "/node_modules/bicycle/types/Schema.d.ts",
     "/node_modules/bicycle/types/SchemaKind.d.ts",
     "/node_modules/bicycle/types/ServerPreparation.d.ts",
     "/node_modules/bicycle/types/ServerResponse.d.ts",
     "/node_modules/bicycle/types/SessionID.d.ts",
+    "/node_modules/bicycle/types/SessionVersion.d.ts",
     "/node_modules/bicycle/types/ValueType.d.ts",
     "/node_modules/bicycle/utils/run-query-against-cache.d.ts",
+    "/node_modules/csstype/index.d.ts",
     "/node_modules/http-basic/lib/CachedResponse.d.ts",
     "/node_modules/http-basic/lib/Headers.d.ts",
     "/node_modules/http-basic/lib/HttpVerb.d.ts",
@@ -559,6 +593,8 @@ Object {
     "/src/example/query.ts",
     "/src/example/scalar-types.ts",
     "/src/example/scalars/Email.ts",
+    "/src/example/scalars/Email2.src.ts",
+    "/src/example/scalars/Email2.ts",
     "/src/example/scalars/MyEnum.ts",
     "/src/example/scalars/RichText.ts",
     "/src/example/server.ts",
@@ -584,6 +620,27 @@ Object {
         "line": 6,
       },
       "validatorName": "validateEmail",
+    },
+    "Email2": Object {
+      "aliasLocation": Object {
+        "fileName": "/src/example/scalars/Email2.ts",
+        "line": 11,
+      },
+      "brandName": "Email2",
+      "exportName": "default",
+      "name": "Email2",
+      "type": Object {
+        "kind": "String",
+        "loc": Object {
+          "fileName": "/src/example/scalars/Email2.ts",
+          "line": 5,
+        },
+      },
+      "validatorLocation": Object {
+        "fileName": "/src/example/scalars/Email2.ts",
+        "line": 11,
+      },
+      "validatorName": "default.isValid",
     },
     "RichText": Object {
       "aliasLocation": Object {
