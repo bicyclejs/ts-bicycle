@@ -21,25 +21,31 @@ export default function getSchemaFromType(
   type: ts.Type,
   parser: Parser,
 ): ValueType {
-  if (type.aliasSymbol && type.aliasSymbol.declarations) {
-    const opaqueDeclarations = type.aliasSymbol.declarations.filter(d =>
-      ts
-        .getJSDocTags(d)
-        .some(t => t.tagName.text === 'opaque' || t.tagName.text === 'nominal'),
-    );
-    if (opaqueDeclarations.length === 1) {
-      const id = scalarIDFromSymbol(
-        type.aliasSymbol,
-        opaqueDeclarations[0],
-        parser,
+  const aliasSymbols = getAliasSymbols(type, parser);
+  for (const aliasSymbol of aliasSymbols) {
+    if (aliasSymbol.declarations) {
+      const opaqueDeclarations = aliasSymbol.declarations.filter(d =>
+        ts
+          .getJSDocTags(d)
+          .some(
+            t => t.tagName.text === 'opaque' || t.tagName.text === 'nominal',
+          ),
       );
-      if (id) {
-        const name = parser.scalarNames.get(id);
-        if (name) {
-          return {
-            kind: SchemaKind.Named,
-            name,
-          };
+      if (opaqueDeclarations.length === 1) {
+        // getSymbolWalker
+        const id = scalarIDFromSymbol(
+          aliasSymbol,
+          opaqueDeclarations[0],
+          parser,
+        );
+        if (id) {
+          const name = parser.scalarNames.get(id);
+          if (name) {
+            return {
+              kind: SchemaKind.Named,
+              name,
+            };
+          }
         }
       }
     }
@@ -175,6 +181,12 @@ export default function getSchemaFromType(
         }
       }
     });
+    // if (!properties.length && parser.currentLocation) {
+    //   console.warn(
+    //     parser.createError('Warning, empty object', parser.currentLocation)
+    //       .message,
+    //   );
+    // }
     return {
       kind: SchemaKind.Object,
       properties,
@@ -188,4 +200,17 @@ export default function getSchemaFromType(
   }
 
   throw new Error('Unkown type ' + typeFlagsToString(type.flags));
+}
+
+function getAliasSymbols(type: ts.Type, parser: Parser) {
+  const symbol = type.getSymbol();
+  // console.log('type: ' + (symbol && symbol.escapedName));
+  if (symbol && symbol.declarations && symbol.declarations.length) {
+    return (type.aliasSymbol ? [type.aliasSymbol] : []).concat(
+      parser.checker
+        .getSymbolsInScope(symbol.declarations[0], ts.SymbolFlags.TypeAlias)
+        .filter(s => type === parser.checker.getDeclaredTypeOfSymbol(s)),
+    );
+  }
+  return type.aliasSymbol ? [type.aliasSymbol] : [];
 }

@@ -13,7 +13,7 @@ import Person from './objects/Person';
 import {Root} from './objects/Root';
 import {validateEmail} from './scalars/Email';
 import Email2Validator from './scalars/Email2';
-import {validate as validateRichText} from './scalars/RichText';
+import RichTextValidator from './scalars/RichText';
 import _Context0 from './Context';
 
 // root never has any actual data, so we create one reusable instance
@@ -455,8 +455,11 @@ const schema: Schema<_Context0> = {
     kind: SchemaKind.Scalar,
     name: 'RichText',
     description: undefined,
-    baseType: {kind: 'Any'} as any,
-    validate: validateRichText,
+    baseType: {
+      kind: 'Any',
+      loc: {fileName: '/src/example/scalars/RichText.ts', line: 5},
+    } as any,
+    validate: RichTextValidator.isValid,
   },
 };
 export {Options};

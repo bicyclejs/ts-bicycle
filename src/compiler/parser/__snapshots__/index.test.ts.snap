@@ -487,14 +487,6 @@ Object {
       },
       "name": "MyEnum",
     },
-    "RichText": Object {
-      "exportName": "default",
-      "location": Object {
-        "fileName": "/src/example/scalars/RichText.ts",
-        "line": 1,
-      },
-      "name": "RichText",
-    },
   },
   "programFiles": Array [
     "/node_modules/@types/body-parser/index.d.ts",
@@ -596,6 +588,7 @@ Object {
     "/src/example/scalars/Email2.src.ts",
     "/src/example/scalars/Email2.ts",
     "/src/example/scalars/MyEnum.ts",
+    "/src/example/scalars/RichText.src.ts",
     "/src/example/scalars/RichText.ts",
     "/src/example/server.ts",
   ],
@@ -645,19 +638,23 @@ Object {
     "RichText": Object {
       "aliasLocation": Object {
         "fileName": "/src/example/scalars/RichText.ts",
-        "line": 4,
+        "line": 11,
       },
       "brandName": "RichText",
       "exportName": "default",
       "name": "RichText",
       "type": Object {
         "kind": "Any",
+        "loc": Object {
+          "fileName": "/src/example/scalars/RichText.ts",
+          "line": 5,
+        },
       },
       "validatorLocation": Object {
         "fileName": "/src/example/scalars/RichText.ts",
-        "line": 4,
+        "line": 11,
       },
-      "validatorName": "validate",
+      "validatorName": "default.isValid",
     },
   },
 }

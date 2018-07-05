@@ -69,13 +69,19 @@ export default class Parser {
       return {fileName, line: line + 1};
     }
   }
+
+  currentLocation: LocationInfo | undefined;
   withLoc(type: () => ValueType, node: ts.Node): ValueType {
     const locationInfo = this.getLocation(node);
+    const oldLocation = this.currentLocation;
+    this.currentLocation = locationInfo;
     try {
       const t = type();
       t.loc = locationInfo;
+      this.currentLocation = oldLocation;
       return t;
     } catch (ex) {
+      this.currentLocation = oldLocation;
       if (!ex.tsLocation) {
         ex.message +=
           ' ' + locationInfo.fileName + ' line ' + locationInfo.line;
