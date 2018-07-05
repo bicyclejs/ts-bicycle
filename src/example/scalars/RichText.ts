@@ -39,5 +39,3 @@ const RichText = {
   },
 };
 export {RichText};
-const Foo = 10;
-export {Foo as Bar};
