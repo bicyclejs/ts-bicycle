@@ -1,6 +1,6 @@
 export type Mapping = {[name: string]: {filename: string; exportName?: string}};
 export interface Imports<T extends Mapping> {
-  get(name: keyof T): keyof T;
+  get(name: keyof T & string): keyof T & string;
   finish(): void;
 }
 export default function createImports<T extends Mapping>(
@@ -11,7 +11,7 @@ export default function createImports<T extends Mapping>(
   result.push('');
   const required = new Set<string>();
   return {
-    get(name: keyof T): keyof T {
+    get(name: keyof T & string): keyof T & string {
       if (!(name in mapping)) {
         throw new Error('Unsupported import name ' + name);
       }

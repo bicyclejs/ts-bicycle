@@ -9,7 +9,10 @@ function isLocationInfo(node: any): node is LocationInfo {
 export default class Parser {
   public readonly program: ts.Program;
   public readonly checker: ts.TypeChecker;
-  public readonly scalarNames = new Map<ScalarID, ScalarName>();
+  public readonly scalarNames: Map<ScalarID, ScalarName> = new Map<
+    ScalarID,
+    ScalarName
+  >();
   public readonly fileNames = new Map<string, string>();
   constructor(fileNames: string[], options: ts.CompilerOptions) {
     fileNames.forEach(name => {

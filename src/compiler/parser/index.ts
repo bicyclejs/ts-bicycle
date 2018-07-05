@@ -116,7 +116,7 @@ export default function parseSchema(
   function visitTypeAliasDeclaration(node: ts.TypeAliasDeclaration) {
     const scalar = getScalarInfo(node.type, node.name);
     if (scalar) {
-      const scalarName = node.name.text as ScalarName;
+      const scalarName = ScalarName.unsafeCast(node.name.text);
       parser.scalarNames.set(scalarID(scalar), scalarName);
       scalarInfoByAlias.set(scalarName, scalar);
       const isExported =
@@ -143,7 +143,9 @@ export default function parseSchema(
     result.enums[node.name.text] = {
       name: node.name.text,
       exportName: isExported
-        ? isDefaultExport ? 'default' : node.name.text
+        ? isDefaultExport
+          ? 'default'
+          : node.name.text
         : 'UNKNOWN',
       location: parser.getLocation(node),
     };
