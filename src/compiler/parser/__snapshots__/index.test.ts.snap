@@ -675,7 +675,7 @@ Object {
         "line": 11,
       },
       "brandName": "RichText",
-      "exportName": "default",
+      "exportName": "RichText",
       "name": "RichText",
       "type": Object {
         "kind": "Any",
@@ -688,7 +688,7 @@ Object {
         "fileName": "/src/example/scalars/RichText.ts",
         "line": 11,
       },
-      "validatorName": "default.isValid",
+      "validatorName": "RichText.isValid",
     },
   },
 }

@@ -5,7 +5,7 @@ import Context from '../Context';
 import Person from './Person';
 import Email, {validateEmail} from '../scalars/Email';
 import Email2 from '../scalars/Email2';
-import RichText from '../scalars/RichText';
+import {RichText} from '../scalars/RichText';
 
 export class Root extends BaseObject<{}> {
   $auth = {

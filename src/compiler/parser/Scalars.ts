@@ -102,7 +102,17 @@ export function scalarIDFromSymbol(
             exportName = 'default';
           }
         }
-        // || ts.isExportDeclaration(statement);
+        if (ts.isExportDeclaration(statement)) {
+          if (statement.exportClause) {
+            statement.exportClause.elements.forEach(element => {
+              const localName = element.propertyName || element.name;
+              const exportedName = element.name;
+              if (localName.escapedText === escapedName) {
+                exportName = exportedName.text;
+              }
+            });
+          }
+        }
       });
     }
     parser.modernScalars.set(id, {

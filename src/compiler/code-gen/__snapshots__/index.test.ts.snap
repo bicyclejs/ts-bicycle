@@ -179,7 +179,7 @@ exports[`compile scalar-types 1`] = `
 
 import Email from './scalars/Email';
 import Email2 from './scalars/Email2';
-import RichText from './scalars/RichText';
+import {RichText} from './scalars/RichText';
 import {EmailBrand} from './scalars/Email'
 import MyEnum from './scalars/MyEnum'
 
@@ -207,7 +207,7 @@ import Person from './objects/Person';
 import {Root} from './objects/Root';
 import {validateEmail} from './scalars/Email';
 import Email2Validator from './scalars/Email2';
-import RichTextValidator from './scalars/RichText';
+import {RichText as RichTextValidator} from './scalars/RichText';
 import _Context0 from './Context';
 
 // root never has any actual data, so we create one reusable instance

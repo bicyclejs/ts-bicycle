@@ -13,7 +13,7 @@ import Person from './objects/Person';
 import {Root} from './objects/Root';
 import {validateEmail} from './scalars/Email';
 import Email2Validator from './scalars/Email2';
-import RichTextValidator from './scalars/RichText';
+import {RichText as RichTextValidator} from './scalars/RichText';
 import _Context0 from './Context';
 
 // root never has any actual data, so we create one reusable instance
