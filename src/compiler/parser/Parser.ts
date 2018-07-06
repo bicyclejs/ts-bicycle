@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import ValueType, {LocationInfo} from 'bicycle/types/ValueType';
 import {ScalarID, ScalarName, ModernScalarInfo} from './Scalars';
+import AST from '../AST';
 
 function isLocationInfo(node: any): node is LocationInfo {
   return typeof node.fileName === 'string' && typeof node.line === 'number';
@@ -9,6 +10,14 @@ function isLocationInfo(node: any): node is LocationInfo {
 export default class Parser {
   public readonly program: ts.Program;
   public readonly checker: ts.TypeChecker;
+  public readonly result: AST = {
+    programFiles: [],
+    classes: {},
+    context: [],
+    scalars: {},
+    enums: {},
+  };
+
   public readonly scalarNames: Map<ScalarID, ScalarName> = new Map<
     ScalarID,
     ScalarName
@@ -47,7 +56,15 @@ export default class Parser {
     return newName;
   }
   public readonly fileNames = new Map<string, string>();
-  constructor(fileNames: string[], options: ts.CompilerOptions) {
+  public readonly visitEnumDeclaration: (
+    declaration: ts.EnumDeclaration,
+  ) => void;
+  constructor(
+    fileNames: string[],
+    options: ts.CompilerOptions,
+    visitEnumDeclaration: (declaration: ts.EnumDeclaration) => void,
+  ) {
+    this.visitEnumDeclaration = visitEnumDeclaration;
     fileNames.forEach(name => {
       this.fileNames.set(name.toLowerCase(), name);
     });

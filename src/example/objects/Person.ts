@@ -1,7 +1,7 @@
 import Object from 'bicycle/BaseObject';
 
 import Context from '../Context';
-import MyEnum from '../scalars/MyEnum';
+import MyEnum from '../../MyEnum';
 
 export interface PersonDataLink {
   person: Person;

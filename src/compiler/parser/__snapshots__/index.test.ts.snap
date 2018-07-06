@@ -516,7 +516,7 @@ Object {
     "MyEnum": Object {
       "exportName": "default",
       "location": Object {
-        "fileName": "/src/example/scalars/MyEnum.ts",
+        "fileName": "/src/MyEnum.ts",
         "line": 1,
       },
       "name": "MyEnum",
@@ -609,6 +609,7 @@ Object {
     "/node_modules/typescript/lib/lib.es2017.string.d.ts",
     "/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts",
     "/node_modules/typescript/lib/lib.es5.d.ts",
+    "/src/MyEnum.ts",
     "/src/example/Context.ts",
     "/src/example/client.ts",
     "/src/example/objects/Other.ts",
@@ -621,7 +622,6 @@ Object {
     "/src/example/scalars/Email.ts",
     "/src/example/scalars/Email2.src.ts",
     "/src/example/scalars/Email2.ts",
-    "/src/example/scalars/MyEnum.ts",
     "/src/example/scalars/RichText.src.ts",
     "/src/example/scalars/RichText.ts",
     "/src/example/server.ts",

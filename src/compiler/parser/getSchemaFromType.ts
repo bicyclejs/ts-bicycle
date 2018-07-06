@@ -78,6 +78,10 @@ export default function getSchemaFromType(
       const parent: ts.Symbol | undefined = (type.symbol as any).parent;
       if (parent) {
         (result as any).enumDeclaration = parent.name + '.' + enumMemberName;
+        const declaration = parent.valueDeclaration;
+        if (declaration && ts.isEnumDeclaration(declaration)) {
+          parser.visitEnumDeclaration(declaration);
+        }
       }
     }
     return result;
@@ -92,6 +96,10 @@ export default function getSchemaFromType(
       elements: type.types.map(t => getSchemaFromType(t, parser)),
     };
     if (type.aliasSymbol) {
+      const declaration = type.aliasSymbol.valueDeclaration;
+      if (declaration && ts.isEnumDeclaration(declaration)) {
+        parser.visitEnumDeclaration(declaration);
+      }
       (result as any).enumDeclaration = type.aliasSymbol.name;
     }
     return result;

@@ -1,27 +1,21 @@
 import {realpathSync} from 'fs';
-import * as ts from 'typescript';
-import getObjectDataTypeNode from './getObjectDataTypeNode';
+import ts from 'typescript';
 import getSchemaFromType from './getSchemaFromType';
 import Parser from './Parser';
 import AST from '../AST';
-import {ParsedMethod, ResolvedAPI} from '../ParsedObject';
 import SchemaKind from 'bicycle/types/SchemaKind';
-import {LocationInfo} from 'bicycle/types/ValueType';
-import {isIntersectionType, isEnumType, isObjectType} from './TypeUtils';
+import {isIntersectionType, isEnumType} from './TypeUtils';
 import {ScalarName, ScalarInfo, scalarID} from './Scalars';
+import parseEnumDeclaration from './parseEnumDeclaration';
+import {tryGetExportName} from './getExportName';
+import parseClassDeclaration from './parseClassDeclaration';
 
 export default function parseSchema(
   fileNames: string[],
   options: ts.CompilerOptions,
 ): AST {
-  const result: AST = {
-    programFiles: [],
-    classes: {},
-    context: [],
-    scalars: {},
-    enums: {},
-  };
-  const parser = new Parser(fileNames, options);
+  const parser = new Parser(fileNames, options, visitEnumDeclaration);
+  const result = parser.result;
 
   const scalarInfoByAlias = new Map<ScalarName, ScalarInfo>();
   const scalarExportName = new Map<ScalarName, string>();
@@ -129,36 +123,17 @@ export default function parseSchema(
     if (scalar) {
       const scalarName = parser.renameScalar(scalarID(scalar), node.name.text);
       scalarInfoByAlias.set(scalarName, scalar);
-      const isExported =
-        node.modifiers &&
-        node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
-      const isDefaultExport =
-        node.modifiers &&
-        node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword);
-      if (isExported) {
-        scalarExportName.set(
-          scalarName,
-          isDefaultExport ? 'default' : scalarName,
-        );
+      const exportedName = tryGetExportName(node, parser);
+      if (exportedName) {
+        scalarExportName.set(scalarName, exportedName);
       }
     }
   }
   function visitEnumDeclaration(node: ts.EnumDeclaration) {
-    const isExported =
-      node.modifiers &&
-      node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
-    const isDefaultExport =
-      node.modifiers &&
-      node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword);
-    result.enums[node.name.text] = {
-      name: node.name.text,
-      exportName: isExported
-        ? isDefaultExport
-          ? 'default'
-          : node.name.text
-        : 'UNKNOWN',
-      location: parser.getLocation(node),
-    };
+    const e = parseEnumDeclaration(node, parser);
+    if (e) {
+      result.enums[e.name] = e;
+    }
     const scalar = getScalarInfo(node, node.name);
     if (scalar && !parser.scalarNames.has(scalarID(scalar))) {
       const scalarName = parser.renameScalar(
@@ -166,11 +141,9 @@ export default function parseSchema(
         scalar.brandName,
       );
       scalarInfoByAlias.set(scalarName, scalar);
-      if (isExported && !scalarExportName.has(scalarName)) {
-        scalarExportName.set(
-          scalarName,
-          isDefaultExport ? 'default' : scalarName,
-        );
+      const exportName = tryGetExportName(node, parser);
+      if (exportName && !scalarExportName.has(scalarName)) {
+        scalarExportName.set(scalarName, exportName);
       }
     }
   }
@@ -195,22 +168,20 @@ export default function parseSchema(
   function visitFunctionDeclartion(node: ts.FunctionDeclaration) {
     const functionName = node.name && node.name.text;
     if (functionName && node.type && ts.isTypePredicateNode(node.type)) {
-      const isDefaultExport =
-        node.modifiers &&
-        node.modifiers.some(m => m.kind === ts.SyntaxKind.DefaultKeyword);
       const scalar = getScalarInfo(node.type.type);
       if (scalar) {
         const alias = parser.scalarNames.get(scalarID(scalar));
         if (alias) {
           const exportName = scalarExportName.get(alias);
-          if (exportName) {
+          const validatorName = tryGetExportName(node, parser);
+          if (exportName && validatorName) {
             result.scalars[alias] = {
               type: scalar.baseType,
               brandName: scalar.brandName,
               name: alias,
               exportName,
               aliasLocation: parser.getLocation(node),
-              validatorName: isDefaultExport ? 'default' : functionName,
+              validatorName,
               validatorLocation: parser.getLocation(node),
             };
           }
@@ -219,297 +190,9 @@ export default function parseSchema(
     }
   }
   function visitClassDeclaration(node: ts.ClassDeclaration) {
-    const dataTypeNode = getObjectDataTypeNode(node, parser);
-    if (!dataTypeNode) {
-      // does not extend `Object`, ignoring
-      return;
+    const classDeclaration = parseClassDeclaration(node, parser);
+    if (classDeclaration) {
+      result.classes[classDeclaration.className] = classDeclaration.classData;
     }
-
-    if (!node.name) {
-      throw parser.createError(
-        `You cannot use an anonymous class as an object type in a bicycle schema.`,
-        node,
-      );
-    }
-    const className = node.name.text;
-    if (className in result.classes) {
-      throw parser.createError(
-        `Duplicate declaration for class ${className}`,
-        node.name,
-      );
-    }
-    if (
-      !node.modifiers ||
-      !node.modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword)
-    ) {
-      throw parser.createError(
-        `${className} is not exported, you must export any Bicycle Schema Objects`,
-        node.name,
-      );
-    }
-    const isDefaultExport = node.modifiers.some(
-      m => m.kind === ts.SyntaxKind.DefaultKeyword,
-    );
-
-    const idName = getIdName(node);
-    const instanceAPI = resolveAPI(
-      node.members.filter(e => !isStatic(e)),
-      idName,
-    );
-    const staticAPI = resolveAPI(node.members.filter(e => isStatic(e)));
-
-    const dataType = parser.checker.getTypeFromTypeNode(dataTypeNode);
-    const properties = (instanceAPI.properties = {});
-    if (isObjectType(dataType)) {
-      dataType.getProperties().forEach(p => {
-        if (
-          (p.name === idName.name || p.name in instanceAPI.auth) &&
-          !(p.name in instanceAPI.methods)
-        ) {
-          if (
-            p.valueDeclaration &&
-            ts.isPropertySignature(p.valueDeclaration) &&
-            p.valueDeclaration.type
-          ) {
-            const v = p.valueDeclaration;
-            const t = p.valueDeclaration.type;
-            properties[p.name] = parser.withLoc(
-              () =>
-                getSchemaFromType(
-                  parser.checker.getTypeFromTypeNode(t),
-                  parser,
-                ),
-              v,
-            );
-            if (p.flags & ts.SymbolFlags.Optional) {
-              properties[p.name] = parser.withLoc(
-                () => ({
-                  kind: SchemaKind.Union,
-                  elements: [properties[p.name], {kind: SchemaKind.Void}],
-                }),
-                v,
-              );
-              // see code-gen/generateType for the nasty hack
-              (properties[p.name] as any).isOptional = true;
-            }
-          }
-        }
-      });
-    }
-    if (
-      className !== 'Root' &&
-      !(idName.name in properties) &&
-      !(idName.name in instanceAPI.methods)
-    ) {
-      throw parser.createError(
-        `Could not find a property called "${
-          idName.name
-        }" in ${className}. Either define an ` +
-          `id property called "${
-            idName.name
-          }" that returns a unique string for each object, ` +
-          `or set the "idName" property to a property name that exists for your object.`,
-        idName.loc,
-      );
-    }
-
-    result.classes[className] = {
-      exportedName: isDefaultExport ? 'default' : className,
-      loc: parser.getLocation(node),
-      idName: idName.name,
-      instanceAPI,
-      staticAPI,
-    };
   }
-  function hasMethod(elements: ts.ClassElement[], name: string) {
-    return elements.some(member => {
-      return (
-        ts.isMethodDeclaration(member) &&
-        ts.isIdentifier(member.name) &&
-        member.name.text === name
-      );
-    });
-  }
-  function resolveAPI(
-    members: ts.ClassElement[],
-    idName?: {name: string; loc: LocationInfo},
-  ): ResolvedAPI {
-    const authMethodNames = new Set<string>();
-    const exposedMethods = new Set<string>();
-    const auth: {[propertyName: string]: string} = {};
-    const authMethods: {[key: string]: ParsedMethod} = {};
-    const methods: {[key: string]: ParsedMethod} = {};
-    members.forEach(member => {
-      if (ts.isPropertyDeclaration(member) && ts.isIdentifier(member.name)) {
-        if (member.name.text === '$auth') {
-          if (
-            !member.initializer ||
-            !ts.isObjectLiteralExpression(member.initializer)
-          ) {
-            throw parser.createError(
-              'The $auth must be initialised with an object literal.',
-              member.initializer || member,
-            );
-          }
-          member.initializer.properties.forEach(property => {
-            if (!ts.isPropertyAssignment(property)) {
-              throw parser.createError(
-                'Property in $auth must be a plain property with array as the value.',
-                property,
-              );
-            }
-            if (!property.name || !ts.isIdentifier(property.name)) {
-              throw parser.createError(
-                'Property name in $auth must be an identifier.',
-                property.name || property,
-              );
-            }
-            const groupName = property.name.text;
-            authMethodNames.add('$' + groupName);
-            if (
-              groupName !== 'public' &&
-              !hasMethod(members, '$' + groupName)
-            ) {
-              throw parser.createError(
-                `Could not find an implementation for $${groupName}`,
-                property.name,
-              );
-            }
-            if (!ts.isArrayLiteralExpression(property.initializer)) {
-              throw parser.createError(
-                'Property value in $auth must be an array literal.',
-                property.initializer,
-              );
-            }
-            property.initializer.elements.forEach(element => {
-              if (!ts.isStringLiteral(element)) {
-                throw parser.createError(
-                  'Property value in $auth must be an array of string literals.',
-                  element,
-                );
-              }
-              const propertyName = element.text;
-              if (auth[propertyName]) {
-                throw parser.createError(
-                  `"${propertyName} is in $auth categories of "${
-                    auth[propertyName]
-                  }" and ` +
-                    `"${groupName}". We can't tell whether you expected us to require users ` +
-                    `to match "${auth[propertyName]} && ${groupName}" or ` +
-                    `"${
-                      auth[propertyName]
-                    } || ${groupName}". You need to be explicit. ` +
-                    `You could set up a new group like: \n\n` +
-                    `async $${
-                      auth[propertyName]
-                    }And${groupName[0].toUpperCase() +
-                      groupName.substr(1)}(args: any, ctx: Context) {\n` +
-                    `  return (await this.$${
-                      auth[propertyName]
-                    }(args, ctx)) && (await this.$${groupName}(args, ctx));\n` +
-                    `}`,
-                  element,
-                );
-              }
-              auth[propertyName] = groupName;
-              exposedMethods.add(propertyName);
-              return propertyName;
-            });
-          });
-        }
-      }
-    });
-    members.forEach(member => {
-      if (ts.isMethodDeclaration(member) && ts.isIdentifier(member.name)) {
-        const name = member.name.text;
-        if (authMethodNames.has(name)) {
-          authMethods[name] = convertMethodToSchema(member, name);
-        }
-        if (exposedMethods.has(name) || (idName && idName.name === name)) {
-          methods[name] = convertMethodToSchema(member, name);
-        }
-      }
-    });
-    return {auth, authMethods, methods};
-  }
-  function getIdName(
-    node: ts.ClassDeclaration,
-  ): {name: string; loc: LocationInfo} {
-    const result = {name: 'id', loc: parser.getLocation(node.name || node)};
-    node.members.forEach(member => {
-      if (ts.isPropertyDeclaration(member) && ts.isIdentifier(member.name)) {
-        if (member.name.text === '$id') {
-          if (!member.initializer || !ts.isStringLiteral(member.initializer)) {
-            throw parser.createError(
-              'The $id must be initialised with a string literal.',
-              member.initializer || member,
-            );
-          }
-          result.name = member.initializer.text;
-          result.loc = parser.getLocation(member.initializer || member);
-        }
-      }
-    });
-    return result;
-  }
-  function convertMethodToSchema(
-    method: ts.MethodDeclaration,
-    name: string,
-  ): ParsedMethod {
-    const paramType = method.parameters[0] && method.parameters[0].type;
-    const ctxType = method.parameters[1] && method.parameters[1].type;
-    if (ctxType) {
-      const contextSymbol = parser.checker.getTypeFromTypeNode(ctxType).symbol;
-      if (contextSymbol) {
-        const parent: ts.Symbol | void = (contextSymbol as any).parent;
-        if (parent && parent.flags & ts.SymbolFlags.Module) {
-          const rawFileName = JSON.parse(parent.name);
-          const fileName =
-            parser.fileNames.get(rawFileName.toLowerCase()) || rawFileName;
-          const exportName = contextSymbol.name;
-          if (
-            !result.context.some(
-              c => c.fileName === fileName && c.exportName === exportName,
-            )
-          ) {
-            result.context.push({fileName, exportName});
-          }
-        }
-        // TODO: warn if we can't find the context
-      }
-    }
-    const methodType = method.type;
-    const length = method.parameters.length;
-    return {
-      name,
-      args: paramType
-        ? parser.withLoc(
-            () =>
-              getSchemaFromType(
-                parser.checker.getTypeFromTypeNode(paramType),
-                parser,
-              ),
-            paramType,
-          )
-        : {kind: SchemaKind.Void},
-      result: methodType
-        ? parser.withLoc(
-            () =>
-              getSchemaFromType(
-                parser.checker.getTypeFromTypeNode(methodType),
-                parser,
-              ),
-            methodType,
-          )
-        : {kind: SchemaKind.Void},
-      length,
-    };
-  }
-}
-
-function isStatic(e: ts.ClassElement): boolean {
-  return !!(
-    e.modifiers &&
-    e.modifiers.some(token => token.kind === ts.SyntaxKind.StaticKeyword)
-  );
 }
