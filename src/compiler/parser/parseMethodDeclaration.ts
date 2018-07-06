@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript';
 import {ParsedMethod} from '../ParsedObject';
 import Parser from './Parser';
 import getSchemaFromType from './getSchemaFromType';

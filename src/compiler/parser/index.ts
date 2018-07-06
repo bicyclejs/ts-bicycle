@@ -1,5 +1,5 @@
 import {realpathSync} from 'fs';
-import ts from 'typescript';
+import * as ts from 'typescript';
 import getSchemaFromType from './getSchemaFromType';
 import Parser from './Parser';
 import AST from '../AST';

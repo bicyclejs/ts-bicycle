@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript';
 import {ResolvedAPI, ParsedMethod} from '../ParsedObject';
 import {LocationInfo} from 'bicycle/types/ValueType';
 import Parser from './Parser';

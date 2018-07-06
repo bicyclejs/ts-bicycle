@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import * as ts from 'typescript';
 import Parser from './Parser';
 import getSourceFile from './getSourceFile';
 

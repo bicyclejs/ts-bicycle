@@ -1,16 +1,11 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": false,
     "declaration": true,
     "outDir": "lib",
     "module": "commonjs",
     "target": "es2016",
-    "lib": [
-      "dom",
-      "es2015",
-      "es2016",
-      "es2017"
-    ],
+    "lib": ["dom", "es2015", "es2016", "es2017"],
     "sourceMap": true,
     "jsx": "preserve",
     "moduleResolution": "node",
