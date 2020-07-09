@@ -103,7 +103,10 @@ export function scalarIDFromSymbol(
           }
         }
         if (ts.isExportDeclaration(statement)) {
-          if (statement.exportClause) {
+          if (
+            statement.exportClause &&
+            ts.isNamedExports(statement.exportClause)
+          ) {
             statement.exportClause.elements.forEach(element => {
               const localName = element.propertyName || element.name;
               const exportedName = element.name;

@@ -11,8 +11,7 @@ import BicycleServer, {Options} from 'bicycle/server-core';
 import Invite from './objects/Other';
 import Person from './objects/Person';
 import {Root} from './objects/Root';
-import {validateEmail} from './scalars/Email';
-import Email2Validator from './scalars/Email2';
+import EmailValidator from './scalars/Email';
 import {RichText as RichTextValidator} from './scalars/RichText';
 import _Context0 from './Context';
 
@@ -303,8 +302,8 @@ const schema: Schema<_Context0> = {
           kind: 'Union',
           elements: [
             {kind: 'Null'},
-            {kind: 'Literal', value: true},
             {kind: 'Literal', value: false},
+            {kind: 'Literal', value: true},
           ],
         } as any,
         argType: {kind: 'Void'} as any,
@@ -315,7 +314,7 @@ const schema: Schema<_Context0> = {
           context: _Context0,
           subQuery: true | Query,
           qCtx: QueryContext<_Context0>,
-        ): (null | true | false) | PromiseLike<null | true | false> {
+        ): (null | false | true) | PromiseLike<null | false | true> {
           return root.nullOrBooleanPromise();
         },
       },
@@ -326,7 +325,7 @@ const schema: Schema<_Context0> = {
         resultType: {
           kind: 'Named',
           name: 'RichText',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 50},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 37},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -350,7 +349,7 @@ const schema: Schema<_Context0> = {
         } as any,
         argType: {
           kind: 'Void',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 22},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 20},
         } as any,
         auth: 'public',
         resolve(
@@ -374,7 +373,7 @@ const schema: Schema<_Context0> = {
         argType: {
           kind: 'Named',
           name: 'Email',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 39},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 26},
         } as any,
         auth: 'public',
         resolve(
@@ -387,30 +386,6 @@ const schema: Schema<_Context0> = {
           return root.peopleByEmail(args, context);
         },
       },
-      peopleByEmail2: {
-        kind: SchemaKind.FieldMethod,
-        name: 'peopleByEmail2',
-        description: undefined,
-        resultType: {
-          kind: 'List',
-          element: {kind: 'Named', name: 'Person'},
-        } as any,
-        argType: {
-          kind: 'Named',
-          name: 'Email2',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 28},
-        } as any,
-        auth: 'public',
-        resolve(
-          value: {},
-          args: ScalarTypes.Email2,
-          context: _Context0,
-          subQuery: true | Query,
-          qCtx: QueryContext<_Context0>,
-        ): Person[] | PromiseLike<Person[]> {
-          return root.peopleByEmail2(args, context);
-        },
-      },
       person: {
         kind: SchemaKind.FieldMethod,
         name: 'person',
@@ -418,7 +393,7 @@ const schema: Schema<_Context0> = {
         resultType: {kind: 'Named', name: 'Person'} as any,
         argType: {
           kind: 'Number',
-          loc: {fileName: '/src/example/objects/Root.ts', line: 25},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 23},
         } as any,
         auth: 'public',
         resolve(
@@ -441,7 +416,7 @@ const schema: Schema<_Context0> = {
             {kind: 'Literal', value: 'Hello'},
             {kind: 'Literal', value: 'World'},
           ],
-          loc: {fileName: '/src/example/objects/Root.ts', line: 56},
+          loc: {fileName: '/src/example/objects/Root.ts', line: 43},
         } as any,
         argType: {kind: 'Void'} as any,
         auth: 'public',
@@ -464,19 +439,9 @@ const schema: Schema<_Context0> = {
     description: undefined,
     baseType: {
       kind: 'String',
-      loc: {fileName: '/src/example/scalars/Email.ts', line: 7},
+      loc: {fileName: '/src/example/scalars/Email.ts', line: 5},
     } as any,
-    validate: validateEmail,
-  },
-  Email2: {
-    kind: SchemaKind.Scalar,
-    name: 'Email2',
-    description: undefined,
-    baseType: {
-      kind: 'String',
-      loc: {fileName: '/src/example/scalars/Email2.ts', line: 5},
-    } as any,
-    validate: Email2Validator.isValid,
+    validate: EmailValidator.isValid,
   },
   RichText: {
     kind: SchemaKind.Scalar,

@@ -168,7 +168,7 @@ export default function parseSchema(
   function visitFunctionDeclartion(node: ts.FunctionDeclaration) {
     const functionName = node.name && node.name.text;
     if (functionName && node.type && ts.isTypePredicateNode(node.type)) {
-      const scalar = getScalarInfo(node.type.type);
+      const scalar = node.type.type && getScalarInfo(node.type.type);
       if (scalar) {
         const alias = parser.scalarNames.get(scalarID(scalar));
         if (alias) {

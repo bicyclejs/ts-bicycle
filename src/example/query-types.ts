@@ -103,20 +103,6 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
       ),
     );
   }
-  peopleByEmail2<TPerson>(
-    args: ScalarTypes.Email2,
-    Person: PersonQuery<TPerson>,
-  ): RootQuery<TResult & {peopleByEmail2: TPerson[]}> {
-    return new RootQuery(
-      addField(
-        this._query,
-        args === undefined
-          ? 'peopleByEmail2'
-          : 'peopleByEmail2(' + stringify(args) + ')',
-        (Person as any)._query,
-      ),
-    );
-  }
   peopleByEmail<TPerson>(
     args: ScalarTypes.Email,
     Person: PersonQuery<TPerson>,
@@ -135,7 +121,7 @@ export class RootQuery<TResult = {}> extends BaseRootQuery<TResult> {
     return new RootQuery(addField(this._query, 'page', true));
   }
   get nullOrBooleanPromise(): RootQuery<
-    TResult & {nullOrBooleanPromise: null | true | false}
+    TResult & {nullOrBooleanPromise: null | false | true}
   > {
     return new RootQuery(addField(this._query, 'nullOrBooleanPromise', true));
   }

@@ -46,25 +46,19 @@ export interface RootOptimisticUpdaters {}
 export interface RootCache {
   get(name: 'people'): void | PersonCache[];
   get(name: 'person', args: number): void | PersonCache;
-  get(name: 'peopleByEmail2', args: ScalarTypes.Email2): void | PersonCache[];
   get(name: 'peopleByEmail', args: ScalarTypes.Email): void | PersonCache[];
   get(name: 'page'): void | ScalarTypes.RichText;
-  get(name: 'nullOrBooleanPromise'): void | (null | true | false);
+  get(name: 'nullOrBooleanPromise'): void | (null | false | true);
   get(name: 'someSpecificString'): void | ('Hello' | 'World');
   set(name: 'people', value: PersonCache[]): this;
   set(name: 'person', args: number, value: PersonCache): this;
-  set(
-    name: 'peopleByEmail2',
-    args: ScalarTypes.Email2,
-    value: PersonCache[],
-  ): this;
   set(
     name: 'peopleByEmail',
     args: ScalarTypes.Email,
     value: PersonCache[],
   ): this;
   set(name: 'page', value: ScalarTypes.RichText): this;
-  set(name: 'nullOrBooleanPromise', value: null | true | false): this;
+  set(name: 'nullOrBooleanPromise', value: null | false | true): this;
   set(name: 'someSpecificString', value: 'Hello' | 'World'): this;
   getObject(typeName: 'Invite', id: string): InviteCache;
   getObject(typeName: 'Person', id: string): PersonCache;

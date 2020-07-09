@@ -3,8 +3,7 @@ import BaseObject from 'bicycle/BaseObject';
 import Context from '../Context';
 
 import Person from './Person';
-import Email, {validateEmail} from '../scalars/Email';
-import Email2 from '../scalars/Email2';
+import Email from '../scalars/Email';
 import {RichText} from '../scalars/RichText';
 
 export class Root extends BaseObject<{}> {
@@ -13,7 +12,6 @@ export class Root extends BaseObject<{}> {
       'people',
       'person',
       'peopleByEmail',
-      'peopleByEmail2',
       'page',
       'nullOrBooleanPromise',
       'someSpecificString',
@@ -25,23 +23,12 @@ export class Root extends BaseObject<{}> {
   async person(id: number, context: Context): Promise<Person> {
     return new Person({id, name: 'Forbes', links: []});
   }
-  async peopleByEmail2(args: Email2, context: Context): Promise<Person[]> {
-    // you can use the branded type as a base type without any special conversion
-    const e: string = args;
-    console.log(e);
-    // you can use the validate function to add the brand
-    if (Email2.isValid(e)) {
-      const a: Email2 = e;
-      console.log(a);
-    }
-    return [];
-  }
   async peopleByEmail(args: Email, context: Context): Promise<Person[]> {
     // you can use the branded type as a base type without any special conversion
     const e: string = args;
     console.log(e);
     // you can use the validate function to add the brand
-    if (validateEmail(e)) {
+    if (Email.isValid(e)) {
       const a: Email = e;
       console.log(a);
     }

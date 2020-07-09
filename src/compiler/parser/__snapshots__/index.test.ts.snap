@@ -310,7 +310,6 @@ Object {
           "page": "public",
           "people": "public",
           "peopleByEmail": "public",
-          "peopleByEmail2": "public",
           "person": "public",
           "someSpecificString": "public",
         },
@@ -326,7 +325,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 53,
+                "line": 40,
               },
               "result": Object {
                 "elements": Array [
@@ -335,11 +334,11 @@ Object {
                   },
                   Object {
                     "kind": "Literal",
-                    "value": true,
+                    "value": false,
                   },
                   Object {
                     "kind": "Literal",
-                    "value": false,
+                    "value": true,
                   },
                 ],
                 "kind": "Union",
@@ -356,7 +355,7 @@ Object {
               "kind": "Named",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 50,
+                "line": 37,
               },
               "name": "RichText",
             },
@@ -366,7 +365,7 @@ Object {
               "kind": "Void",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 22,
+                "line": 20,
               },
             },
             "length": 2,
@@ -375,7 +374,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 22,
+                "line": 20,
               },
               "result": Object {
                 "element": Object {
@@ -391,7 +390,7 @@ Object {
               "kind": "Named",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 39,
+                "line": 26,
               },
               "name": "Email",
             },
@@ -401,33 +400,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 39,
-              },
-              "result": Object {
-                "element": Object {
-                  "kind": "Named",
-                  "name": "Person",
-                },
-                "kind": "List",
-              },
-            },
-          },
-          "peopleByEmail2": Object {
-            "args": Object {
-              "kind": "Named",
-              "loc": Object {
-                "fileName": "/src/example/objects/Root.ts",
-                "line": 28,
-              },
-              "name": "Email2",
-            },
-            "length": 2,
-            "name": "peopleByEmail2",
-            "result": Object {
-              "kind": "Promise",
-              "loc": Object {
-                "fileName": "/src/example/objects/Root.ts",
-                "line": 28,
+                "line": 26,
               },
               "result": Object {
                 "element": Object {
@@ -443,7 +416,7 @@ Object {
               "kind": "Number",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 25,
+                "line": 23,
               },
             },
             "length": 2,
@@ -452,7 +425,7 @@ Object {
               "kind": "Promise",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 25,
+                "line": 23,
               },
               "result": Object {
                 "kind": "Named",
@@ -480,7 +453,7 @@ Object {
               "kind": "Union",
               "loc": Object {
                 "fileName": "/src/example/objects/Root.ts",
-                "line": 56,
+                "line": 43,
               },
             },
           },
@@ -489,7 +462,7 @@ Object {
       },
       "loc": Object {
         "fileName": "/src/example/objects/Root.ts",
-        "line": 9,
+        "line": 8,
       },
       "staticAPI": Object {
         "auth": Object {},
@@ -505,14 +478,6 @@ Object {
     },
   ],
   "enums": Object {
-    "EmailBrand": Object {
-      "exportName": "EmailBrand",
-      "location": Object {
-        "fileName": "/src/example/scalars/Email.ts",
-        "line": 1,
-      },
-      "name": "EmailBrand",
-    },
     "MyEnum": Object {
       "exportName": "default",
       "location": Object {
@@ -537,7 +502,58 @@ Object {
     "/node_modules/@types/mime/index.d.ts",
     "/node_modules/@types/mkdirp/index.d.ts",
     "/node_modules/@types/ms/index.d.ts",
-    "/node_modules/@types/node/index.d.ts",
+    "/node_modules/@types/node/async_hooks.d.ts",
+    "/node_modules/@types/node/base.d.ts",
+    "/node_modules/@types/node/buffer.d.ts",
+    "/node_modules/@types/node/child_process.d.ts",
+    "/node_modules/@types/node/cluster.d.ts",
+    "/node_modules/@types/node/console.d.ts",
+    "/node_modules/@types/node/constants.d.ts",
+    "/node_modules/@types/node/crypto.d.ts",
+    "/node_modules/@types/node/dgram.d.ts",
+    "/node_modules/@types/node/dns.d.ts",
+    "/node_modules/@types/node/domain.d.ts",
+    "/node_modules/@types/node/events.d.ts",
+    "/node_modules/@types/node/fs.d.ts",
+    "/node_modules/@types/node/fs/promises.d.ts",
+    "/node_modules/@types/node/globals.d.ts",
+    "/node_modules/@types/node/http.d.ts",
+    "/node_modules/@types/node/http2.d.ts",
+    "/node_modules/@types/node/https.d.ts",
+    "/node_modules/@types/node/inspector.d.ts",
+    "/node_modules/@types/node/module.d.ts",
+    "/node_modules/@types/node/net.d.ts",
+    "/node_modules/@types/node/os.d.ts",
+    "/node_modules/@types/node/path.d.ts",
+    "/node_modules/@types/node/perf_hooks.d.ts",
+    "/node_modules/@types/node/process.d.ts",
+    "/node_modules/@types/node/punycode.d.ts",
+    "/node_modules/@types/node/querystring.d.ts",
+    "/node_modules/@types/node/readline.d.ts",
+    "/node_modules/@types/node/repl.d.ts",
+    "/node_modules/@types/node/stream.d.ts",
+    "/node_modules/@types/node/string_decoder.d.ts",
+    "/node_modules/@types/node/timers.d.ts",
+    "/node_modules/@types/node/tls.d.ts",
+    "/node_modules/@types/node/trace_events.d.ts",
+    "/node_modules/@types/node/ts3.2/base.d.ts",
+    "/node_modules/@types/node/ts3.2/fs.d.ts",
+    "/node_modules/@types/node/ts3.2/globals.d.ts",
+    "/node_modules/@types/node/ts3.2/process.d.ts",
+    "/node_modules/@types/node/ts3.2/util.d.ts",
+    "/node_modules/@types/node/ts3.5/base.d.ts",
+    "/node_modules/@types/node/ts3.5/globals.global.d.ts",
+    "/node_modules/@types/node/ts3.5/wasi.d.ts",
+    "/node_modules/@types/node/ts3.7/assert.d.ts",
+    "/node_modules/@types/node/ts3.7/base.d.ts",
+    "/node_modules/@types/node/ts3.7/index.d.ts",
+    "/node_modules/@types/node/tty.d.ts",
+    "/node_modules/@types/node/url.d.ts",
+    "/node_modules/@types/node/util.d.ts",
+    "/node_modules/@types/node/v8.d.ts",
+    "/node_modules/@types/node/vm.d.ts",
+    "/node_modules/@types/node/worker_threads.d.ts",
+    "/node_modules/@types/node/zlib.d.ts",
     "/node_modules/@types/qs/index.d.ts",
     "/node_modules/@types/range-parser/index.d.ts",
     "/node_modules/@types/react-dom/index.d.ts",
@@ -608,7 +624,15 @@ Object {
     "/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts",
     "/node_modules/typescript/lib/lib.es2017.string.d.ts",
     "/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts",
+    "/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts",
+    "/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts",
+    "/node_modules/typescript/lib/lib.es2018.d.ts",
+    "/node_modules/typescript/lib/lib.es2018.intl.d.ts",
+    "/node_modules/typescript/lib/lib.es2018.promise.d.ts",
+    "/node_modules/typescript/lib/lib.es2018.regexp.d.ts",
+    "/node_modules/typescript/lib/lib.es2020.bigint.d.ts",
     "/node_modules/typescript/lib/lib.es5.d.ts",
+    "/node_modules/typescript/lib/lib.esnext.intl.d.ts",
     "/src/MyEnum.ts",
     "/src/example/Context.ts",
     "/src/example/client.ts",
@@ -619,9 +643,8 @@ Object {
     "/src/example/query-types.ts",
     "/src/example/query.ts",
     "/src/example/scalar-types.ts",
+    "/src/example/scalars/Email.src.ts",
     "/src/example/scalars/Email.ts",
-    "/src/example/scalars/Email2.src.ts",
-    "/src/example/scalars/Email2.ts",
     "/src/example/scalars/RichText.src.ts",
     "/src/example/scalars/RichText.ts",
     "/src/example/server.ts",
@@ -630,41 +653,20 @@ Object {
     "Email": Object {
       "aliasLocation": Object {
         "fileName": "/src/example/scalars/Email.ts",
-        "line": 6,
+        "line": 11,
       },
-      "brandName": "EmailBrand",
+      "brandName": "Email",
       "exportName": "default",
       "name": "Email",
       "type": Object {
         "kind": "String",
         "loc": Object {
           "fileName": "/src/example/scalars/Email.ts",
-          "line": 7,
-        },
-      },
-      "validatorLocation": Object {
-        "fileName": "/src/example/scalars/Email.ts",
-        "line": 6,
-      },
-      "validatorName": "validateEmail",
-    },
-    "Email2": Object {
-      "aliasLocation": Object {
-        "fileName": "/src/example/scalars/Email2.ts",
-        "line": 11,
-      },
-      "brandName": "Email2",
-      "exportName": "default",
-      "name": "Email2",
-      "type": Object {
-        "kind": "String",
-        "loc": Object {
-          "fileName": "/src/example/scalars/Email2.ts",
           "line": 5,
         },
       },
       "validatorLocation": Object {
-        "fileName": "/src/example/scalars/Email2.ts",
+        "fileName": "/src/example/scalars/Email.ts",
         "line": 11,
       },
       "validatorName": "default.isValid",
